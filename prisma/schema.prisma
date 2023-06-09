@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  uuid         String    @unique @default(uuid()) @db.Uuid
+  firstName    String    @map("first_name")
+  lastName     String    @map("last_name")
+  email        String    @unique
+  hash         String
+  role         Role      @default(CLIENT)
+  orders       Order[]
+  productsLike Product[]
+  tokens       Token[]
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Decimal  @db.Decimal(5, 2)
+  image       String
+  likes       Int      @default(0)
+  stock       Int
+  isDisabled  Boolean  @default(false) @map("is_disabled")
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  Int      @map("categoryId")
+  orders      Order[]
+  usersLike   User[]
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("products")
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Order {
+  id        Int       @id @default(autoincrement())
+  total     Decimal   @db.Decimal(8, 2)
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int       @map("user_id")
+  products  Product[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("orders")
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid())
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?     @map(name: "user_id")
+  jti       String   @unique @default(uuid())
+
+  @@map(name: "tokens")
+}
+
+enum Role {
+  CLIENT
+  MANAGER
+}
