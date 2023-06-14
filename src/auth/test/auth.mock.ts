@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { Token, User } from '@prisma/client';
+import { SignInDto, TokenDto } from '../dto';
 
 export const userMock: User = {
   id: faker.number.int(),
@@ -19,4 +20,18 @@ export const tokenMock: Token = {
   createdAt: faker.date.anytime(),
   userId: faker.number.int(),
   jti: faker.string.uuid(),
+};
+
+export const signInDtoMock: SignInDto = {
+  email: faker.internet.email(),
+  password: faker.lorem.word(),
+};
+
+export const tokenDtoMock: TokenDto = {
+  accessToken: faker.string.nanoid(),
+  exp: faker.string.numeric(),
+};
+
+export const authServiceMock = {
+  signIn: jest.fn().mockResolvedValue(tokenDtoMock),
 };
