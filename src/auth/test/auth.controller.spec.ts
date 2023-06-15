@@ -41,4 +41,10 @@ describe('AuthController', () => {
 
     expect(result).toBe(credentialsMock);
   });
+
+  it('should return undefined', async () => {
+    const result = await controller.logOut(faker.string.nanoid());
+
+    expect(result).toBeUndefined();
+  });
 });

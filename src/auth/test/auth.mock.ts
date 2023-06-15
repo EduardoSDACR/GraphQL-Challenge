@@ -30,4 +30,5 @@ export const credentialsMock: TokenDto = {
 export const authServiceMock = {
   signIn: jest.fn().mockResolvedValue(credentialsMock),
   signUp: jest.fn().mockResolvedValue(credentialsMock),
+  logOut: jest.fn().mockResolvedValue(undefined),
 };
