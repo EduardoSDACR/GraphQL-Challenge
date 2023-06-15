@@ -5,7 +5,7 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import { SignInDto, TokenDto } from './dto';
+import { SignInDto, SignUpDto, TokenDto } from './dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -14,7 +14,13 @@ export class AuthController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('signin')
-  sigIn(@Body() input: SignInDto): Promise<TokenDto> {
+  signIn(@Body() input: SignInDto): Promise<TokenDto> {
     return this.authService.signIn(input);
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Post('signup')
+  signUp(@Body() input: SignUpDto): Promise<TokenDto> {
+    return this.authService.signUp(input);
   }
 }
