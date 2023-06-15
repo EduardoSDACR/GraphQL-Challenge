@@ -43,7 +43,7 @@ describe('AuthController', () => {
   });
 
   it('should return undefined', async () => {
-    const result = await controller.logOut(faker.string.nanoid());
+    const result = await controller.signOut(faker.string.nanoid());
 
     expect(result).toBeUndefined();
   });

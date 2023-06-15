@@ -29,8 +29,8 @@ export class AuthController {
   }
 
   @UseGuards(JwtGuard)
-  @Delete('logout')
-  logOut(@Headers('Authorization') jwt: string): Promise<void> {
-    return this.authService.logOut(jwt.replace('Bearer ', ''));
+  @Delete('signout')
+  signOut(@Headers('Authorization') jwt: string): Promise<void> {
+    return this.authService.signOut(jwt.replace('Bearer ', ''));
   }
 }

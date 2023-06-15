@@ -124,7 +124,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('logOut', () => {
+  describe('signOut', () => {
     it('should throw an error when user session is not found', async () => {
       prismaService.token.delete.mockRejectedValue(
         new Prisma.PrismaClientKnownRequestError('', {
@@ -134,13 +134,13 @@ describe('AuthService', () => {
       );
 
       await expect(
-        authService.logOut(faker.string.nanoid()),
+        authService.signOut(faker.string.nanoid()),
       ).rejects.toThrowError(new NotFoundException('Session not found'));
     });
 
     it('should delete user session', async () => {
       prismaService.token.delete.mockResolvedValueOnce(tokenMock);
-      const result = await authService.logOut(faker.string.nanoid());
+      const result = await authService.signOut(faker.string.nanoid());
 
       expect(result).toBeUndefined();
     });

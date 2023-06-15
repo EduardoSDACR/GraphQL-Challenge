@@ -64,7 +64,7 @@ export class AuthService {
     return this.generateAccessToken(token.jti);
   }
 
-  async logOut(jwt: string): Promise<void> {
+  async signOut(jwt: string): Promise<void> {
     try {
       const { sub } = this.jwtService.verify(jwt, {
         secret: this.config.get<string>('JWT_SECRET_KEY'),
