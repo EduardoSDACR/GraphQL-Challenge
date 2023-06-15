@@ -64,6 +64,31 @@ export class AuthService {
     return this.generateAccessToken(token.jti);
   }
 
+  async logOut(jwt: string): Promise<void> {
+    try {
+      const { sub } = this.jwtService.verify(jwt, {
+        secret: this.config.get<string>('JWT_SECRET_KEY'),
+      });
+
+      await this.prisma.token.delete({
+        where: {
+          jti: sub as string,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.NOT_FOUND:
+            throw new NotFoundException('Session not found');
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
+    }
+  }
+
   async createToken(id: number): Promise<Token> {
     try {
       return await this.prisma.token.create({
