@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock } from '@golevelup/ts-jest';
+import { faker } from '@faker-js/faker';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
-import { authServiceMock, signInDtoMock, tokenDtoMock } from './auth.mock';
+import { SignInDto, SignUpDto } from '../dto';
+import { authServiceMock, credentialsMock } from './auth.mock';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -14,15 +15,30 @@ describe('AuthController', () => {
     })
       .overrideProvider(AuthService)
       .useValue(authServiceMock)
-      .useMocker(createMock)
       .compile();
 
     controller = module.get<AuthController>(AuthController);
   });
 
-  it('should grant access credentials', async () => {
-    const result = await controller.signIn(signInDtoMock);
+  it('should grant access credentials when sign in', async () => {
+    const body: SignInDto = {
+      email: faker.internet.email(),
+      password: faker.lorem.word(),
+    };
+    const result = await controller.signIn(body);
 
-    expect(result).toBe(tokenDtoMock);
+    expect(result).toBe(credentialsMock);
+  });
+
+  it('should grant access credentials when sign up', async () => {
+    const body: SignUpDto = {
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      email: faker.internet.email(),
+      password: faker.lorem.word(),
+    };
+    const result = await controller.signUp(body);
+
+    expect(result).toBe(credentialsMock);
   });
 });
