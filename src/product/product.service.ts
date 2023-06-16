@@ -3,8 +3,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Product, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaErrorEnum } from '../utils/enums';
-import { ProductDto } from './dto/product.dto';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, ProductDto } from './dto';
+import { UpdateProductDto } from './dto';
 
 @Injectable()
 export class ProductService {
@@ -76,6 +76,37 @@ export class ProductService {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
+          case PrismaErrorEnum.FOREIGN_KEY_CONSTRAINT:
+            throw new NotFoundException('Category not found');
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
+    }
+  }
+
+  async update(
+    input: UpdateProductDto,
+    productId: number,
+  ): Promise<ProductDto> {
+    try {
+      const product = await this.prisma.product.update({
+        where: {
+          id: productId,
+        },
+        data: {
+          ...input,
+        },
+      });
+
+      return new ProductDto(product);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.NOT_FOUND:
+            throw new NotFoundException('Product not found');
           case PrismaErrorEnum.FOREIGN_KEY_CONSTRAINT:
             throw new NotFoundException('Category not found');
           default:

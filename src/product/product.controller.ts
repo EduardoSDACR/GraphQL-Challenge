@@ -8,12 +8,13 @@ import {
   ParseFilePipeBuilder,
   ParseIntPipe,
   Post,
+  Put,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, UpdateProductDto } from './dto';
 import { saveImageToStorage } from './helpers/image-storage';
 
 @Controller('products')
@@ -58,5 +59,14 @@ export class ProductController {
     image: Express.Multer.File,
   ) {
     return this.product.create(input, image.filename);
+  }
+
+  @Put(':productId')
+  @UseInterceptors(ClassSerializerInterceptor)
+  updateProduct(
+    @Body() input: UpdateProductDto,
+    @Param('productId', ParseIntPipe) productId: number,
+  ) {
+    return this.product.update(input, productId);
   }
 }
