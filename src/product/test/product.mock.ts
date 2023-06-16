@@ -46,4 +46,17 @@ export const productServiceMock = {
   find: jest.fn().mockResolvedValue(productMock),
   findCategoryProducts: jest.fn().mockResolvedValue(productsByCategoryMock),
   create: jest.fn().mockResolvedValue(productMock),
+  update: jest.fn().mockResolvedValue(productMock),
 };
+
+export const prismaForeignKeyExceptionMock =
+  new Prisma.PrismaClientKnownRequestError('', {
+    code: 'P2003',
+    clientVersion: '4.15.0',
+  });
+
+export const prismaNotFoundExceptionMock =
+  new Prisma.PrismaClientKnownRequestError('', {
+    code: 'P2025',
+    clientVersion: '4.15.0',
+  });

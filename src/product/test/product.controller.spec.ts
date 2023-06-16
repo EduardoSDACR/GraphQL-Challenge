@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
 import { ProductController } from '../product.controller';
 import { ProductService } from '../product.service';
-import { CreateProductDto } from '../dto/create-product.dto';
+import { CreateProductDto, UpdateProductDto } from '../dto';
 import {
   productMock,
   productsByCategoryMock,
@@ -66,6 +66,17 @@ describe('ProductController', () => {
     };
 
     const result = await controller.createProduct(body, image);
+
+    expect(result).toMatchObject(productMock);
+  });
+
+  it('should return updated product', async () => {
+    const body: UpdateProductDto = {
+      description: faker.lorem.sentence(),
+      stock: faker.number.int(),
+    };
+
+    const result = await controller.updateProduct(body, faker.number.int());
 
     expect(result).toMatchObject(productMock);
   });

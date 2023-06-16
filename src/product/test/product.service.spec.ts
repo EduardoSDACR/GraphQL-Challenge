@@ -1,14 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { createMock } from '@golevelup/ts-jest';
 import { faker } from '@faker-js/faker';
 import { NotFoundException } from '@nestjs/common';
 import { ProductService } from '../product.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ProductDto } from '../dto/product.dto';
-import { CreateProductDto } from '../dto/create-product.dto';
+import { CreateProductDto, ProductDto } from '../dto';
+import { UpdateProductDto } from '../dto';
 import {
+  prismaForeignKeyExceptionMock,
+  prismaNotFoundExceptionMock,
   productMock,
   productsMock,
   productsNotDisabledByCategoryMock,
@@ -103,10 +105,7 @@ describe('ProductService', () => {
         categoryId: faker.number.int(),
       };
       prismaService.product.create.mockRejectedValueOnce(
-        new Prisma.PrismaClientKnownRequestError('', {
-          code: 'P2003',
-          clientVersion: '4.15.0',
-        }),
+        prismaForeignKeyExceptionMock,
       );
 
       await expect(
@@ -127,6 +126,45 @@ describe('ProductService', () => {
       const result = await productService.create(input, faker.lorem.word());
 
       expect(result).toMatchObject(new ProductDto(productMock));
+    });
+  });
+
+  describe('update', () => {
+    it('should update a product', async () => {
+      prismaService.product.update.mockResolvedValueOnce(productMock);
+      const input: UpdateProductDto = {
+        name: faker.lorem.word(),
+      };
+
+      const result = await productService.update(input, faker.number.int());
+
+      expect(result).toMatchObject(new ProductDto(productMock));
+    });
+
+    it('should throw an error when product does not exist', async () => {
+      prismaService.product.update.mockRejectedValueOnce(
+        prismaNotFoundExceptionMock,
+      );
+      const input: UpdateProductDto = {
+        description: faker.lorem.word(),
+      };
+
+      await expect(
+        productService.update(input, faker.number.int()),
+      ).rejects.toThrowError(new NotFoundException('Product not found'));
+    });
+
+    it('should throw an error when category does not exist', async () => {
+      prismaService.product.update.mockRejectedValueOnce(
+        prismaForeignKeyExceptionMock,
+      );
+      const input: UpdateProductDto = {
+        stock: faker.number.int(),
+      };
+
+      await expect(
+        productService.update(input, faker.number.int()),
+      ).rejects.toThrowError(new NotFoundException('Category not found'));
     });
   });
 });
