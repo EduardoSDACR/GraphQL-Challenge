@@ -16,6 +16,7 @@ export class ProductService {
         name: true,
         price: true,
         image: true,
+        categoryId: true,
       },
     });
   }
@@ -36,5 +37,21 @@ export class ProductService {
     }
 
     return new ProductDto(product);
+  }
+
+  async findCategoryProducts(categoryId: number): Promise<Partial<Product>[]> {
+    return this.prisma.product.findMany({
+      where: {
+        categoryId,
+        isDisabled: false,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        image: true,
+        categoryId: true,
+      },
+    });
   }
 }

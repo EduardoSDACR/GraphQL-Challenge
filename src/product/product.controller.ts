@@ -10,8 +10,13 @@ export class ProductController {
     return this.product.getProducts();
   }
 
-  @Get(':id')
-  getProductById(@Param('id', ParseIntPipe) id: number) {
-    return this.product.find(id);
+  @Get(':productId')
+  getProductById(@Param('productId', ParseIntPipe) productId: number) {
+    return this.product.find(productId);
+  }
+
+  @Get('category/:categoryId')
+  getProductsByCategory(@Param('categoryId', ParseIntPipe) categoryId: number) {
+    return this.product.findCategoryProducts(categoryId);
   }
 }

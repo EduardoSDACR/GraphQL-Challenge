@@ -19,14 +19,30 @@ export const productsMock: Product[] = [
   {
     ...productMock,
     id: 1,
+    categoryId: 1,
   },
   {
     ...productMock,
     id: 2,
+    categoryId: 2,
+  },
+  {
+    ...productMock,
+    id: 3,
+    categoryId: 1,
   },
 ];
+
+export const productsByCategoryMock = productsMock.filter(
+  (item) => (item.categoryId = 1),
+);
+
+export const productsNotDisabledByCategoryMock = productsByCategoryMock.filter(
+  (item) => (item.isDisabled = false),
+);
 
 export const productServiceMock = {
   getProducts: jest.fn().mockResolvedValue(productsMock),
   find: jest.fn().mockResolvedValue(productMock),
+  findCategoryProducts: jest.fn().mockResolvedValue(productsByCategoryMock),
 };

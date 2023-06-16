@@ -10,6 +10,9 @@ export class ProductDto {
   readonly name: string;
 
   @Expose()
+  readonly description: string;
+
+  @Expose()
   readonly price: Prisma.Decimal;
 
   @Expose()
@@ -17,6 +20,9 @@ export class ProductDto {
 
   @Expose()
   readonly likes: number;
+
+  @Expose()
+  readonly stock: number;
 
   @Expose()
   readonly categoryId: number;
