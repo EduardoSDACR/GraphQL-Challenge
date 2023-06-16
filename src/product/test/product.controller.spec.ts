@@ -80,4 +80,10 @@ describe('ProductController', () => {
 
     expect(result).toMatchObject(productMock);
   });
+
+  it('should return undefined', async () => {
+    const result = await controller.deleteProduct(faker.number.int());
+
+    expect(result).toBeUndefined();
+  });
 });

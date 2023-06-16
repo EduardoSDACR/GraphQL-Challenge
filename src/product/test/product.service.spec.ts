@@ -167,4 +167,23 @@ describe('ProductService', () => {
       ).rejects.toThrowError(new NotFoundException('Category not found'));
     });
   });
+
+  describe('delete', () => {
+    it('should delete a product', async () => {
+      prismaService.product.findUnique.mockResolvedValueOnce(productMock);
+      prismaService.product.delete.mockResolvedValueOnce(productMock);
+
+      const result = await productService.delete(faker.number.int());
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should throw an error if product does not exist', async () => {
+      prismaService.product.findUnique.mockResolvedValueOnce(null);
+
+      await expect(
+        productService.delete(faker.number.int()),
+      ).rejects.toThrowError(new NotFoundException('Product not found'));
+    });
+  });
 });
