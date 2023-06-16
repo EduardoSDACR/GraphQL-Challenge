@@ -2,7 +2,9 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   ParseFilePipeBuilder,
@@ -68,5 +70,11 @@ export class ProductController {
     @Param('productId', ParseIntPipe) productId: number,
   ) {
     return this.product.update(input, productId);
+  }
+
+  @Delete(':productId')
+  @HttpCode(204)
+  async deleteProduct(@Param('productId', ParseIntPipe) productId: number) {
+    await this.product.delete(productId);
   }
 }
