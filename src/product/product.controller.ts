@@ -1,5 +1,20 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  ParseFilePipeBuilder,
+  ParseIntPipe,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { saveImageToStorage } from './helpers/image-storage';
 
 @Controller('products')
 export class ProductController {
@@ -11,6 +26,7 @@ export class ProductController {
   }
 
   @Get(':productId')
+  @UseInterceptors(ClassSerializerInterceptor)
   getProductById(@Param('productId', ParseIntPipe) productId: number) {
     return this.product.find(productId);
   }
@@ -18,5 +34,29 @@ export class ProductController {
   @Get('category/:categoryId')
   getProductsByCategory(@Param('categoryId', ParseIntPipe) categoryId: number) {
     return this.product.findCategoryProducts(categoryId);
+  }
+
+  @Post()
+  @UseInterceptors(
+    FileInterceptor('image', saveImageToStorage),
+    ClassSerializerInterceptor,
+  )
+  createProduct(
+    @Body() input: CreateProductDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 10000000,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    image: Express.Multer.File,
+  ) {
+    return this.product.create(input, image.filename);
   }
 }

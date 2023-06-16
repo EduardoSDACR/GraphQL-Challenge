@@ -1,7 +1,10 @@
+import { join } from 'path';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Product } from '@prisma/client';
+import { Product, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { PrismaErrorEnum } from '../utils/enums';
 import { ProductDto } from './dto/product.dto';
+import { CreateProductDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -53,5 +56,34 @@ export class ProductService {
         categoryId: true,
       },
     });
+  }
+
+  async create(
+    input: CreateProductDto,
+    imageName: string,
+  ): Promise<ProductDto> {
+    const imagePath = join('/images/', imageName);
+
+    try {
+      const result = await this.prisma.product.create({
+        data: {
+          ...input,
+          image: imagePath,
+        },
+      });
+
+      return new ProductDto(result);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.FOREIGN_KEY_CONSTRAINT:
+            throw new NotFoundException('Category not found');
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
+    }
   }
 }

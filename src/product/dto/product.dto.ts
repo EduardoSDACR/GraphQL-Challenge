@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { Prisma } from '@prisma/client';
 
 @Exclude()
@@ -13,6 +13,7 @@ export class ProductDto {
   readonly description: string;
 
   @Expose()
+  @Transform(({ value }) => JSON.parse(value))
   readonly price: Prisma.Decimal;
 
   @Expose()
