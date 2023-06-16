@@ -45,4 +45,5 @@ export const productServiceMock = {
   getProducts: jest.fn().mockResolvedValue(productsMock),
   find: jest.fn().mockResolvedValue(productMock),
   findCategoryProducts: jest.fn().mockResolvedValue(productsByCategoryMock),
+  create: jest.fn().mockResolvedValue(productMock),
 };

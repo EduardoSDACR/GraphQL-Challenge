@@ -1,7 +1,9 @@
+import * as Stream from 'stream';
 import { Test, TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
 import { ProductController } from '../product.controller';
 import { ProductService } from '../product.service';
+import { CreateProductDto } from '../dto/create-product.dto';
 import {
   productMock,
   productsByCategoryMock,
@@ -40,5 +42,31 @@ describe('ProductController', () => {
     const result = await controller.getProductsByCategory(faker.number.int());
 
     expect(result.length).toBe(productsByCategoryMock.length);
+  });
+
+  it('should return a product', async () => {
+    const body: CreateProductDto = {
+      name: faker.commerce.productName(),
+      description: faker.lorem.sentence(),
+      price: faker.number.float(),
+      stock: faker.number.int(),
+      categoryId: faker.number.int(),
+    };
+    const image: Express.Multer.File = {
+      fieldname: faker.lorem.word(),
+      originalname: faker.lorem.word(),
+      encoding: faker.lorem.word(),
+      mimetype: faker.lorem.word(),
+      destination: faker.lorem.word(),
+      filename: faker.lorem.word(),
+      path: faker.lorem.word(),
+      size: faker.number.int(),
+      stream: new Stream.Readable(),
+      buffer: Buffer.alloc(1),
+    };
+
+    const result = await controller.createProduct(body, image);
+
+    expect(result).toMatchObject(productMock);
   });
 });

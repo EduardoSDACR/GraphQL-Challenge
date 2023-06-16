@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { createMock } from '@golevelup/ts-jest';
 import { faker } from '@faker-js/faker';
 import { NotFoundException } from '@nestjs/common';
 import { ProductService } from '../product.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProductDto } from '../dto/product.dto';
+import { CreateProductDto } from '../dto/create-product.dto';
 import {
   productMock,
   productsMock,
@@ -89,6 +90,43 @@ describe('ProductService', () => {
       );
 
       expect(result.length).toEqual(productsNotDisabledByCategoryMock.length);
+    });
+  });
+
+  describe('create', () => {
+    it('should throw an error if product category does not exist', async () => {
+      const input: CreateProductDto = {
+        name: faker.commerce.productName(),
+        description: faker.lorem.sentence(),
+        price: faker.number.float(),
+        stock: faker.number.int(),
+        categoryId: faker.number.int(),
+      };
+      prismaService.product.create.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('', {
+          code: 'P2003',
+          clientVersion: '4.15.0',
+        }),
+      );
+
+      await expect(
+        productService.create(input, faker.lorem.word()),
+      ).rejects.toThrowError(new NotFoundException('Category not found'));
+    });
+
+    it('should create a product', async () => {
+      const input: CreateProductDto = {
+        name: faker.commerce.productName(),
+        description: faker.lorem.sentence(),
+        price: faker.number.float(),
+        stock: faker.number.int(),
+        categoryId: faker.number.int(),
+      };
+      prismaService.product.create.mockResolvedValueOnce(productMock);
+
+      const result = await productService.create(input, faker.lorem.word());
+
+      expect(result).toMatchObject(new ProductDto(productMock));
     });
   });
 });
