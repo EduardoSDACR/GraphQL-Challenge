@@ -7,7 +7,11 @@ import { NotFoundException } from '@nestjs/common';
 import { ProductService } from '../product.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProductDto } from '../dto/product.dto';
-import { productMock, productsMock } from './product.mock';
+import {
+  productMock,
+  productsMock,
+  productsNotDisabledByCategoryMock,
+} from './product.mock';
 
 describe('ProductService', () => {
   let productService: ProductService;
@@ -71,6 +75,20 @@ describe('ProductService', () => {
       await expect(
         productService.find(faker.number.int()),
       ).rejects.toThrowError(new NotFoundException('Product not found'));
+    });
+  });
+
+  describe('findCategoryProducts', () => {
+    it('should return all not disabled products of a category', async () => {
+      prismaService.product.findMany.mockResolvedValueOnce(
+        productsNotDisabledByCategoryMock,
+      );
+
+      const result = await productService.findCategoryProducts(
+        faker.number.int(),
+      );
+
+      expect(result.length).toEqual(productsNotDisabledByCategoryMock.length);
     });
   });
 });

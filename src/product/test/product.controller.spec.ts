@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
 import { ProductController } from '../product.controller';
 import { ProductService } from '../product.service';
-import { productMock, productServiceMock, productsMock } from './product.mock';
+import {
+  productMock,
+  productsByCategoryMock,
+  productServiceMock,
+  productsMock,
+} from './product.mock';
 
 describe('ProductController', () => {
   let controller: ProductController;
@@ -29,5 +34,11 @@ describe('ProductController', () => {
     const result = await controller.getProductById(faker.number.int());
 
     expect(result).toBe(productMock);
+  });
+
+  it('should return products by category', async () => {
+    const result = await controller.getProductsByCategory(faker.number.int());
+
+    expect(result.length).toBe(productsByCategoryMock.length);
   });
 });
