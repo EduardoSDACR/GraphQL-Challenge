@@ -28,4 +28,5 @@ export const productsMock: Product[] = [
 
 export const productServiceMock = {
   getProducts: jest.fn().mockResolvedValue(productsMock),
+  find: jest.fn().mockResolvedValue(productMock),
 };

@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { faker } from '@faker-js/faker';
 import { ProductController } from '../product.controller';
 import { ProductService } from '../product.service';
-import { productServiceMock, productsMock } from './product.mock';
+import { productMock, productServiceMock, productsMock } from './product.mock';
 
 describe('ProductController', () => {
   let controller: ProductController;
@@ -22,5 +23,11 @@ describe('ProductController', () => {
     const result = await controller.getProducts();
 
     expect(result.length).toEqual(productsMock.length);
+  });
+
+  it('should return one product', async () => {
+    const result = await controller.getProductById(faker.number.int());
+
+    expect(result).toBe(productMock);
   });
 });
