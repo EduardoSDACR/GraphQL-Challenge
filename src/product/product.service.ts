@@ -210,4 +210,32 @@ export class ProductService {
       throw error;
     }
   }
+
+  async updateProductImage(productId: number, imageName): Promise<ProductDto> {
+    const imagePath = join('/images/', imageName);
+
+    try {
+      const product = await this.prisma.product.update({
+        where: {
+          id: productId,
+        },
+        data: {
+          image: imagePath,
+        },
+      });
+
+      return new ProductDto(product);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.NOT_FOUND:
+            throw new NotFoundException('Product not found');
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
+    }
+  }
 }

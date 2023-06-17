@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString, Max } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class CreateProductDto {
   @IsString()
@@ -16,16 +16,16 @@ export class CreateProductDto {
   )
   @Max(1000)
   @IsNotEmpty()
-  @Transform(({ value }) => JSON.parse(value))
+  @Type(() => Number)
   price: number;
 
   @IsNumber()
   @IsNotEmpty()
-  @Transform(({ value }) => JSON.parse(value))
+  @Type(() => Number)
   stock: number;
 
   @IsNumber()
   @IsNotEmpty()
-  @Transform(({ value }) => JSON.parse(value))
+  @Type(() => Number)
   categoryId: number;
 }

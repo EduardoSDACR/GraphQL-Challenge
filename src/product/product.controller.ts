@@ -5,13 +5,13 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpStatus,
   Param,
   ParseFilePipeBuilder,
   ParseIntPipe,
   Patch,
   Post,
   Put,
+  UnprocessableEntityException,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -59,7 +59,11 @@ export class ProductController {
           maxSize: 10000000,
         })
         .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          exceptionFactory() {
+            throw new UnprocessableEntityException(
+              'image file format must be jpg, jpeg or png and size less than 10MB',
+            );
+          },
         }),
     )
     image: Express.Multer.File,
@@ -96,5 +100,33 @@ export class ProductController {
     @GetUser('uuid') userUuid: string,
   ) {
     await this.product.likeProduct(productId, userUuid);
+  }
+
+  @Patch('image/:productId')
+  @UseInterceptors(
+    FileInterceptor('image', saveImageToStorage),
+    ClassSerializerInterceptor,
+  )
+  updateProductImage(
+    @Param('productId', ParseIntPipe) productId: number,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 10000000,
+        })
+        .build({
+          exceptionFactory() {
+            throw new UnprocessableEntityException(
+              'image file format must be jpg, jpeg or png and size less than 10MB',
+            );
+          },
+        }),
+    )
+    image: Express.Multer.File,
+  ) {
+    return this.product.updateProductImage(productId, image.filename);
   }
 }
