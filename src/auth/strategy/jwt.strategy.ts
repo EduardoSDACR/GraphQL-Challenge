@@ -14,14 +14,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { sub: string }) {
-    const user = await this.prisma.token.findUnique({
+    const token = await this.prisma.token.findUnique({
       where: {
         jti: payload.sub,
       },
       select: {
         user: {
           select: {
-            id: true,
+            uuid: true,
             email: true,
             role: true,
           },
@@ -29,10 +29,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       },
     });
 
-    if (!user) {
+    if (!token) {
       throw new UnauthorizedException('Invalid authentication');
     }
 
-    return user;
+    return token.user;
   }
 }

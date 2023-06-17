@@ -159,4 +159,55 @@ export class ProductService {
       throw error;
     }
   }
+
+  async likeProduct(productId: number, userUuid: string): Promise<void> {
+    let data: Prisma.ProductUpdateInput = {
+      likes: { increment: 1 },
+      usersLike: {
+        connect: {
+          uuid: userUuid,
+        },
+      },
+    };
+    const productLiked = await this.prisma.product.findMany({
+      where: {
+        usersLike: {
+          some: {
+            uuid: userUuid,
+          },
+        },
+      },
+    });
+
+    if (productLiked.length !== 0) {
+      data = {
+        likes: { decrement: 1 },
+        usersLike: {
+          disconnect: {
+            uuid: userUuid,
+          },
+        },
+      };
+    }
+
+    try {
+      await this.prisma.product.update({
+        where: {
+          id: productId,
+        },
+        data,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.NOT_FOUND:
+            throw new NotFoundException('Product not found');
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
+    }
+  }
 }

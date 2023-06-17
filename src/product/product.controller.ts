@@ -13,9 +13,12 @@ import {
   Post,
   Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtGuard } from '../auth/guard';
+import { GetUser } from '../auth/decorator';
 import { ProductService } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './dto';
 import { saveImageToStorage } from './helpers/image-storage';
@@ -83,5 +86,15 @@ export class ProductController {
   @HttpCode(204)
   async disableProduct(@Param('productId', ParseIntPipe) productId: number) {
     await this.product.disableProduct(productId);
+  }
+
+  @UseGuards(JwtGuard)
+  @Patch('like/:productId')
+  @HttpCode(204)
+  async likeProduct(
+    @Param('productId', ParseIntPipe) productId: number,
+    @GetUser('uuid') userUuid: string,
+  ) {
+    await this.product.likeProduct(productId, userUuid);
   }
 }
