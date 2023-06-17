@@ -209,6 +209,7 @@ describe('ProductService', () => {
 
   describe('likeProduct', () => {
     it('should like a product', async () => {
+      prismaService.product.findMany.mockResolvedValueOnce([]);
       prismaService.product.update.mockResolvedValueOnce(productMock);
 
       const result = await productService.likeProduct(
@@ -231,12 +232,39 @@ describe('ProductService', () => {
     });
 
     it('should throw an error if product does not exist', async () => {
+      prismaService.product.findMany.mockResolvedValueOnce([]);
       prismaService.product.update.mockRejectedValueOnce(
         prismaNotFoundExceptionMock,
       );
 
       await expect(
         productService.likeProduct(faker.number.int(), faker.string.uuid()),
+      ).rejects.toThrowError(new NotFoundException('Product not found'));
+    });
+  });
+
+  describe('updateProductImage', () => {
+    it('should update product image', async () => {
+      prismaService.product.update.mockResolvedValueOnce(productMock);
+
+      const result = await productService.updateProductImage(
+        faker.number.int(),
+        faker.lorem.word(),
+      );
+
+      expect(result).toMatchObject(new ProductDto(productMock));
+    });
+
+    it('should throw an error when product does not exist', async () => {
+      prismaService.product.update.mockRejectedValueOnce(
+        prismaNotFoundExceptionMock,
+      );
+
+      await expect(
+        productService.updateProductImage(
+          faker.number.int(),
+          faker.lorem.word(),
+        ),
       ).rejects.toThrowError(new NotFoundException('Product not found'));
     });
   });

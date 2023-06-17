@@ -101,4 +101,26 @@ describe('ProductController', () => {
 
     expect(result).toBeUndefined();
   });
+
+  it('should return the updated product', async () => {
+    const image: Express.Multer.File = {
+      fieldname: faker.lorem.word(),
+      originalname: faker.lorem.word(),
+      encoding: faker.lorem.word(),
+      mimetype: faker.lorem.word(),
+      destination: faker.lorem.word(),
+      filename: faker.lorem.word(),
+      path: faker.lorem.word(),
+      size: faker.number.int(),
+      stream: new Stream.Readable(),
+      buffer: Buffer.alloc(1),
+    };
+
+    const result = await controller.updateProductImage(
+      faker.number.int(),
+      image,
+    );
+
+    expect(result).toMatchObject(productMock);
+  });
 });

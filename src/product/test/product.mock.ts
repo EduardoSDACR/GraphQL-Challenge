@@ -50,6 +50,7 @@ export const productServiceMock = {
   delete: jest.fn().mockResolvedValue(undefined),
   disableProduct: jest.fn().mockResolvedValue(undefined),
   likeProduct: jest.fn().mockResolvedValue(undefined),
+  updateProductImage: jest.fn().mockResolvedValue(productMock),
 };
 
 export const prismaForeignKeyExceptionMock =
