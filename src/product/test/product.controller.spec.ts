@@ -86,4 +86,10 @@ describe('ProductController', () => {
 
     expect(result).toBeUndefined();
   });
+
+  it('should return undefined', async () => {
+    const result = await controller.disableProduct(faker.number.int());
+
+    expect(result).toBeUndefined();
+  });
 });
