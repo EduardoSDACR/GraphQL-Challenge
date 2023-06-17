@@ -26,25 +26,25 @@ describe('ProductController', () => {
     controller = module.get<ProductController>(ProductController);
   });
 
-  it('should return a list of products', async () => {
+  it('getProducts should return a list of products', async () => {
     const result = await controller.getProducts();
 
     expect(result.length).toEqual(productsMock.length);
   });
 
-  it('should return one product', async () => {
+  it('getProductById should return one product', async () => {
     const result = await controller.getProductById(faker.number.int());
 
     expect(result).toBe(productMock);
   });
 
-  it('should return products by category', async () => {
+  it('getProductsByCategory should return products by category', async () => {
     const result = await controller.getProductsByCategory(faker.number.int());
 
     expect(result.length).toBe(productsByCategoryMock.length);
   });
 
-  it('should return a product', async () => {
+  it('createProduct should return a product', async () => {
     const body: CreateProductDto = {
       name: faker.commerce.productName(),
       description: faker.lorem.sentence(),
@@ -70,7 +70,7 @@ describe('ProductController', () => {
     expect(result).toMatchObject(productMock);
   });
 
-  it('should return updated product', async () => {
+  it('updateProduct should return updated product', async () => {
     const body: UpdateProductDto = {
       description: faker.lorem.sentence(),
       stock: faker.number.int(),
@@ -81,14 +81,23 @@ describe('ProductController', () => {
     expect(result).toMatchObject(productMock);
   });
 
-  it('should return undefined', async () => {
+  it('deleteProduct should return undefined', async () => {
     const result = await controller.deleteProduct(faker.number.int());
 
     expect(result).toBeUndefined();
   });
 
-  it('should return undefined', async () => {
+  it('disableProduct should return undefined', async () => {
     const result = await controller.disableProduct(faker.number.int());
+
+    expect(result).toBeUndefined();
+  });
+
+  it('likeProduct should return undefined', async () => {
+    const result = await controller.likeProduct(
+      faker.number.int(),
+      faker.string.uuid(),
+    );
 
     expect(result).toBeUndefined();
   });

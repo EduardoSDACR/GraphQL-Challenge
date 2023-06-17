@@ -206,4 +206,38 @@ describe('ProductService', () => {
       ).rejects.toThrowError(new NotFoundException('Product not found'));
     });
   });
+
+  describe('likeProduct', () => {
+    it('should like a product', async () => {
+      prismaService.product.update.mockResolvedValueOnce(productMock);
+
+      const result = await productService.likeProduct(
+        faker.number.int(),
+        faker.string.uuid(),
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should remove like to a product if user already like it before', async () => {
+      prismaService.product.findMany.mockResolvedValueOnce(productsMock);
+
+      const result = await productService.likeProduct(
+        faker.number.int(),
+        faker.string.uuid(),
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should throw an error if product does not exist', async () => {
+      prismaService.product.update.mockRejectedValueOnce(
+        prismaNotFoundExceptionMock,
+      );
+
+      await expect(
+        productService.likeProduct(faker.number.int(), faker.string.uuid()),
+      ).rejects.toThrowError(new NotFoundException('Product not found'));
+    });
+  });
 });
