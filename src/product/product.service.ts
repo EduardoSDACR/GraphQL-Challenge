@@ -135,4 +135,28 @@ export class ProductService {
       },
     });
   }
+
+  async disableProduct(productId: number): Promise<void> {
+    try {
+      await this.prisma.product.update({
+        where: {
+          id: productId,
+        },
+        data: {
+          isDisabled: true,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.NOT_FOUND:
+            throw new NotFoundException('Product not found');
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
+    }
+  }
 }

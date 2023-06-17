@@ -9,6 +9,7 @@ import {
   Param,
   ParseFilePipeBuilder,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   UploadedFile,
@@ -76,5 +77,11 @@ export class ProductController {
   @HttpCode(204)
   async deleteProduct(@Param('productId', ParseIntPipe) productId: number) {
     await this.product.delete(productId);
+  }
+
+  @Patch('disable/:productId')
+  @HttpCode(204)
+  async disableProduct(@Param('productId', ParseIntPipe) productId: number) {
+    await this.product.disableProduct(productId);
   }
 }
