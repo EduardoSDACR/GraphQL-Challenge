@@ -24,4 +24,6 @@ export const categoriesMock: CategoryDto[] = [
 
 export const categoryServiceMock = {
   list: jest.fn().mockResolvedValue(categoriesMock),
+  create: jest.fn().mockResolvedValue(categoryMock),
+  delete: jest.fn().mockResolvedValue(undefined),
 };
