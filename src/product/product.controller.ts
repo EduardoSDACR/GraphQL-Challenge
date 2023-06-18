@@ -43,6 +43,7 @@ export class ProductController {
     return this.product.findCategoryProducts(categoryId);
   }
 
+  @UseGuards(JwtGuard)
   @Post()
   @UseInterceptors(
     FileInterceptor('image', saveImageToStorage),
@@ -71,6 +72,7 @@ export class ProductController {
     return this.product.create(input, image.filename);
   }
 
+  @UseGuards(JwtGuard)
   @Put(':productId')
   @UseInterceptors(ClassSerializerInterceptor)
   updateProduct(
@@ -80,12 +82,14 @@ export class ProductController {
     return this.product.update(input, productId);
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':productId')
   @HttpCode(204)
   async deleteProduct(@Param('productId', ParseIntPipe) productId: number) {
     await this.product.delete(productId);
   }
 
+  @UseGuards(JwtGuard)
   @Patch('disable/:productId')
   @HttpCode(204)
   async disableProduct(@Param('productId', ParseIntPipe) productId: number) {
@@ -102,6 +106,7 @@ export class ProductController {
     await this.product.likeProduct(productId, userUuid);
   }
 
+  @UseGuards(JwtGuard)
   @Patch('image/:productId')
   @UseInterceptors(
     FileInterceptor('image', saveImageToStorage),
