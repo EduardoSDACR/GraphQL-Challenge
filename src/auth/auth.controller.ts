@@ -8,10 +8,12 @@ import {
   UseInterceptors,
   Headers,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SignInDto, SignUpDto, TokenDto } from './dto';
 import { AuthService } from './auth.service';
 import { JwtGuard } from './guard';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -28,6 +30,7 @@ export class AuthController {
     return this.authService.signUp(input);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @Delete('signout')
   signOut(@Headers('Authorization') jwt: string): Promise<void> {

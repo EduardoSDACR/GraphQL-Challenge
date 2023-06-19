@@ -10,12 +10,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 
+@ApiTags('Category')
 @Controller('categories')
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
@@ -25,6 +27,7 @@ export class CategoryController {
     return this.categoryService.list();
   }
 
+  @ApiBearerAuth()
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
   @Post()
@@ -32,6 +35,7 @@ export class CategoryController {
     return this.categoryService.create(input);
   }
 
+  @ApiBearerAuth()
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
   @Delete(':categoryId')

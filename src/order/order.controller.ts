@@ -11,16 +11,19 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorator';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { OrderService } from './order.service';
 
+@ApiTags('Order')
 @Controller('orders')
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
+  @ApiBearerAuth()
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
   @Get('client/:userId')
@@ -38,6 +41,7 @@ export class OrderController {
     return this.orderService.findCartProducts(productsIds);
   }
 
+  @ApiBearerAuth()
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
   @Get(':orderId')
@@ -46,6 +50,7 @@ export class OrderController {
     return this.orderService.find(orderId);
   }
 
+  @ApiBearerAuth()
   @Roles(Role.CLIENT)
   @UseGuards(JwtGuard, RolesGuard)
   @Get('user/me')
@@ -54,6 +59,7 @@ export class OrderController {
     return this.orderService.findClientOrders(userId);
   }
 
+  @ApiBearerAuth()
   @Roles(Role.CLIENT)
   @UseGuards(JwtGuard, RolesGuard)
   @Post('buy')

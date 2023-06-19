@@ -1,5 +1,6 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
 import { Prisma } from '@prisma/client';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Exclude()
 export class ProductDto {
@@ -12,6 +13,7 @@ export class ProductDto {
   @Expose()
   readonly description: string;
 
+  @ApiProperty({ example: 14.2 })
   @Expose()
   @Transform(({ value }) => JSON.parse(value))
   readonly price: Prisma.Decimal;

@@ -10,7 +10,6 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Put,
   Query,
   UnprocessableEntityException,
   UploadedFile,
@@ -19,6 +18,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role } from '@prisma/client';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorator';
 import { Roles } from '../auth/decorator/roles.decorator';
@@ -27,6 +27,7 @@ import { ProductService } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './dto';
 import { saveImageToStorage } from './helpers/image-storage';
 
+@ApiTags('Product')
 @Controller('products')
 export class ProductController {
   constructor(private product: ProductService) {}
@@ -58,6 +59,7 @@ export class ProductController {
     return this.product.findCategoryProducts(categoryId);
   }
 
+  @ApiBearerAuth()
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
   @Post()
@@ -88,9 +90,10 @@ export class ProductController {
     return this.product.create(input, image.filename);
   }
 
+  @ApiBearerAuth()
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Put(':productId')
+  @Patch(':productId')
   @UseInterceptors(ClassSerializerInterceptor)
   updateProduct(
     @Body() input: UpdateProductDto,
@@ -99,6 +102,7 @@ export class ProductController {
     return this.product.update(input, productId);
   }
 
+  @ApiBearerAuth()
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
   @Delete(':productId')
@@ -107,6 +111,7 @@ export class ProductController {
     await this.product.delete(productId);
   }
 
+  @ApiBearerAuth()
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
   @Patch('disable/:productId')
@@ -115,6 +120,7 @@ export class ProductController {
     await this.product.disableProduct(productId);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @Patch('like/:productId')
   @HttpCode(204)
@@ -125,6 +131,7 @@ export class ProductController {
     await this.product.likeProduct(productId, userUuid);
   }
 
+  @ApiBearerAuth()
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
   @Patch('image/:productId')

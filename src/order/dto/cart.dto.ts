@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 import { ProductDto } from '../../product/dto';
 
 @Exclude()
@@ -8,6 +9,7 @@ export class CartDto {
   @Type(() => ProductDto)
   readonly products: ProductDto[];
 
+  @ApiProperty({ example: 200.5 })
   @Expose()
   @Transform(({ value }) => JSON.parse(value))
   readonly totalPrice: Prisma.Decimal;
