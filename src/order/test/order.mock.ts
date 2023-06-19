@@ -34,4 +34,6 @@ export const cartMock: CartDto = {
 export const orderServiceMock = {
   findClientOrders: jest.fn().mockResolvedValue(ordersMock),
   findCartProducts: jest.fn().mockResolvedValue(cartMock),
+  find: jest.fn().mockResolvedValue(orderMock),
+  buyOrderProducts: jest.fn().mockResolvedValue(orderMock),
 };

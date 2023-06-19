@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
 import { OrderController } from '../order.controller';
 import { OrderService } from '../order.service';
-import { orderServiceMock, ordersMock } from './order.mock';
+import { orderMock, orderServiceMock, ordersMock } from './order.mock';
 
 describe('OrderController', () => {
   let controller: OrderController;
@@ -30,5 +30,20 @@ describe('OrderController', () => {
 
     expect(result).toHaveProperty('products');
     expect(result).toHaveProperty('totalPrice');
+  });
+
+  it('should return an order with its products', async () => {
+    const result = await controller.getOrderById(faker.number.int());
+
+    expect(result).toMatchObject(orderMock);
+  });
+
+  it('should return an order', async () => {
+    const result = await controller.buyOrderProducts(faker.string.uuid(), [
+      faker.number.int(),
+      faker.number.int(),
+    ]);
+
+    expect(result).toMatchObject(orderMock);
   });
 });
