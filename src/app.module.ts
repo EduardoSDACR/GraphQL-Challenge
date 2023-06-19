@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { configValidationSchema } from './config.schema';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CategoryModule } from './category/category.module';
     AuthModule,
     ProductModule,
     CategoryModule,
+    OrderModule,
   ],
 })
 export class AppModule {}
