@@ -76,7 +76,7 @@ describe('OrderService', () => {
       prismaService.product.findMany.mockResolvedValueOnce(productsMock);
       prismaService.order.create.mockResolvedValueOnce(orderMock);
 
-      const result = await orderService.buyOrderProducts(faker.string.uuid(), [
+      const result = await orderService.buyOrderProducts(faker.number.int(), [
         faker.number.int(),
       ]);
 
@@ -91,7 +91,7 @@ describe('OrderService', () => {
       );
 
       await expect(
-        orderService.buyOrderProducts(faker.string.uuid(), []),
+        orderService.buyOrderProducts(faker.number.int(), []),
       ).rejects.toThrowError(
         new NotFoundException('One of the products does not exist'),
       );

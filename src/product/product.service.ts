@@ -206,6 +206,7 @@ export class ProductService {
     };
     const productLiked = await this.prisma.product.findMany({
       where: {
+        id: productId,
         usersLike: {
           some: {
             uuid: userUuid,
@@ -238,7 +239,7 @@ export class ProductService {
           case PrismaErrorEnum.NOT_FOUND:
             throw new NotFoundException('Product not found');
           default:
-            throw error;
+            throw new NotFoundException('Product not found');
         }
       }
 
