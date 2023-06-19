@@ -18,8 +18,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Role } from '@prisma/client';
 import { JwtGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorator';
+import { Roles } from '../auth/decorator/roles.decorator';
+import { RolesGuard } from '../auth/guard/roles.guard';
 import { ProductService } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './dto';
 import { saveImageToStorage } from './helpers/image-storage';
@@ -55,7 +58,8 @@ export class ProductController {
     return this.product.findCategoryProducts(categoryId);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles(Role.MANAGER)
+  @UseGuards(JwtGuard, RolesGuard)
   @Post()
   @UseInterceptors(
     FileInterceptor('image', saveImageToStorage),
@@ -84,7 +88,8 @@ export class ProductController {
     return this.product.create(input, image.filename);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles(Role.MANAGER)
+  @UseGuards(JwtGuard, RolesGuard)
   @Put(':productId')
   @UseInterceptors(ClassSerializerInterceptor)
   updateProduct(
@@ -94,14 +99,16 @@ export class ProductController {
     return this.product.update(input, productId);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles(Role.MANAGER)
+  @UseGuards(JwtGuard, RolesGuard)
   @Delete(':productId')
   @HttpCode(204)
   async deleteProduct(@Param('productId', ParseIntPipe) productId: number) {
     await this.product.delete(productId);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles(Role.MANAGER)
+  @UseGuards(JwtGuard, RolesGuard)
   @Patch('disable/:productId')
   @HttpCode(204)
   async disableProduct(@Param('productId', ParseIntPipe) productId: number) {
@@ -118,7 +125,8 @@ export class ProductController {
     await this.product.likeProduct(productId, userUuid);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles(Role.MANAGER)
+  @UseGuards(JwtGuard, RolesGuard)
   @Patch('image/:productId')
   @UseInterceptors(
     FileInterceptor('image', saveImageToStorage),

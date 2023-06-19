@@ -1,5 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { PrismaErrorEnum } from '../utils/enums';
 import { CategoryDto } from './dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 
@@ -30,10 +36,25 @@ export class CategoryService {
       throw new NotFoundException('Category not found');
     }
 
-    await this.prisma.category.delete({
-      where: {
-        id: categoryId,
-      },
-    });
+    try {
+      await this.prisma.category.delete({
+        where: {
+          id: categoryId,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.FOREIGN_KEY_CONSTRAINT:
+            throw new UnprocessableEntityException(
+              'This category is being used',
+            );
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
+    }
   }
 }

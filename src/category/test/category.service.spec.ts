@@ -2,10 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
-import { NotFoundException } from '@nestjs/common';
+import {
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { CategoryService } from '../category.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
+import { prismaForeignKeyExceptionMock } from '../../product/test/product.mock';
 import { categoriesMock, categoryMock } from './category.mock';
 
 describe('CategoryService', () => {
@@ -64,6 +68,19 @@ describe('CategoryService', () => {
       await expect(
         categoryService.delete(faker.number.int()),
       ).rejects.toThrowError(new NotFoundException('Category not found'));
+    });
+
+    it('should throw an error when delete a category used', async () => {
+      prismaService.category.findUnique.mockResolvedValueOnce(categoryMock);
+      prismaService.category.delete.mockRejectedValueOnce(
+        prismaForeignKeyExceptionMock,
+      );
+
+      await expect(
+        categoryService.delete(faker.number.int()),
+      ).rejects.toThrowError(
+        new UnprocessableEntityException('This category is being used'),
+      );
     });
   });
 });

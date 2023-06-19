@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Order, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaErrorEnum } from '../utils/enums';
 import { CartDto } from './dto/cart.dto';
@@ -9,7 +9,7 @@ import { OrderDto } from './dto';
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
-  async findClientOrders(userId: number): Promise<Partial<Order>[]> {
+  async findClientOrders(userId: number): Promise<OrderDto[]> {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -20,7 +20,7 @@ export class OrderService {
       throw new NotFoundException('User not found');
     }
 
-    return this.prisma.order.findMany({
+    const orders = await this.prisma.order.findMany({
       where: {
         userId: user.id,
       },
@@ -28,7 +28,12 @@ export class OrderService {
         id: true,
         total: true,
         createdAt: true,
+        products: true,
       },
+    });
+
+    return orders.map((order) => {
+      return new OrderDto(order);
     });
   }
 
@@ -38,6 +43,7 @@ export class OrderService {
         id: {
           in: productsIds,
         },
+        isDisabled: false,
       },
       select: {
         id: true,
@@ -92,17 +98,13 @@ export class OrderService {
   }
 
   async buyOrderProducts(
-    userUuid: string,
+    userId: number,
     productsIds: number[],
   ): Promise<OrderDto> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        uuid: userUuid,
-      },
-    });
     const products = await this.prisma.product.findMany({
       where: {
         id: { in: productsIds },
+        isDisabled: false,
       },
     });
 
@@ -114,10 +116,10 @@ export class OrderService {
       const order = await this.prisma.order.create({
         data: {
           total: totalPrice,
-          userId: user!.id,
+          userId,
           products: {
-            connect: productsIds.map((id) => {
-              return { id };
+            connect: products.map((product) => {
+              return { id: product.id };
             }),
           },
         },

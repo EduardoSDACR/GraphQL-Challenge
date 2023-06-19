@@ -38,8 +38,16 @@ describe('OrderController', () => {
     expect(result).toMatchObject(orderMock);
   });
 
-  it('should return an order', async () => {
-    const result = await controller.buyOrderProducts(faker.string.uuid(), [
+  it('should return all authenticated client orders', async () => {
+    const result = await controller.getAuthenticatedClientOrders(
+      faker.number.int(),
+    );
+
+    expect(result.length).toEqual(ordersMock.length);
+  });
+
+  it('should return an order after purchase products', async () => {
+    const result = await controller.buyOrderProducts(faker.number.int(), [
       faker.number.int(),
       faker.number.int(),
     ]);
