@@ -11,6 +11,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   UnprocessableEntityException,
   UploadedFile,
   UseGuards,
@@ -30,6 +31,14 @@ export class ProductController {
   @Get()
   getProducts() {
     return this.product.getProducts();
+  }
+
+  @Get('offset')
+  getProductsListWithOffset(
+    @Query('skip', ParseIntPipe) skip: number,
+    @Query('take', ParseIntPipe) take: number,
+  ) {
+    return this.product.getOffsetPaginationProducts(skip, take);
   }
 
   @Get(':productId')

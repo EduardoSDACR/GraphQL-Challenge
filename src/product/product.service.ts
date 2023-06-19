@@ -24,6 +24,22 @@ export class ProductService {
     });
   }
 
+  async getOffsetPaginationProducts(skip: number, take: number) {
+    return this.prisma.product.findMany({
+      skip,
+      take,
+      where: {
+        isDisabled: false,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        categoryId: true,
+      },
+    });
+  }
+
   async find(productId: number): Promise<ProductDto> {
     const product = await this.prisma.product.findUnique({
       where: {
