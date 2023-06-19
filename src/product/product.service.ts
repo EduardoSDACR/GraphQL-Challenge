@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Product, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaErrorEnum } from '../utils/enums';
 import { CreateProductDto, ProductDto } from './dto';
@@ -9,23 +9,31 @@ import { UpdateProductDto } from './dto';
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
-  async getProducts(): Promise<Partial<Product>[]> {
-    return this.prisma.product.findMany({
+  async getProducts(): Promise<ProductDto[]> {
+    const products = await this.prisma.product.findMany({
       where: {
         isDisabled: false,
       },
       select: {
         id: true,
         name: true,
+        description: true,
+        likes: true,
+        stock: true,
         price: true,
         image: true,
         categoryId: true,
       },
     });
+
+    return products.map((product) => new ProductDto(product));
   }
 
-  async getOffsetPaginationProducts(skip: number, take: number) {
-    return this.prisma.product.findMany({
+  async getOffsetPaginationProducts(
+    skip: number,
+    take: number,
+  ): Promise<ProductDto[]> {
+    const products = await this.prisma.product.findMany({
       skip,
       take,
       where: {
@@ -34,10 +42,16 @@ export class ProductService {
       select: {
         id: true,
         name: true,
+        description: true,
+        likes: true,
+        stock: true,
         price: true,
+        image: true,
         categoryId: true,
       },
     });
+
+    return products.map((product) => new ProductDto(product));
   }
 
   async find(productId: number): Promise<ProductDto> {
@@ -58,8 +72,8 @@ export class ProductService {
     return new ProductDto(product);
   }
 
-  async findCategoryProducts(categoryId: number): Promise<Partial<Product>[]> {
-    return this.prisma.product.findMany({
+  async findCategoryProducts(categoryId: number): Promise<ProductDto[]> {
+    const products = await this.prisma.product.findMany({
       where: {
         categoryId,
         isDisabled: false,
@@ -67,11 +81,16 @@ export class ProductService {
       select: {
         id: true,
         name: true,
+        description: true,
+        likes: true,
+        stock: true,
         price: true,
         image: true,
         categoryId: true,
       },
     });
+
+    return products.map((product) => new ProductDto(product));
   }
 
   async create(

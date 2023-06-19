@@ -42,18 +42,22 @@ export class OrderService {
       select: {
         id: true,
         name: true,
+        description: true,
+        likes: true,
+        stock: true,
         price: true,
         image: true,
+        categoryId: true,
       },
     });
     const totalPrice = cart.reduce((total, product) => {
       return total + +product.price;
     }, 0);
 
-    return {
+    return new CartDto({
       products: cart,
       totalPrice: new Prisma.Decimal(totalPrice),
-    };
+    });
   }
 
   async find(orderId: number): Promise<OrderDto> {
@@ -69,8 +73,12 @@ export class OrderService {
           select: {
             id: true,
             name: true,
+            description: true,
+            likes: true,
+            stock: true,
             price: true,
             image: true,
+            categoryId: true,
           },
         },
       },

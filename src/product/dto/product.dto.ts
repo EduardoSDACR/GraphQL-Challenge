@@ -17,6 +17,7 @@ export class ProductDto {
   readonly price: Prisma.Decimal;
 
   @Expose()
+  @Transform(({ value }) => `${process.env.DOMAIN_NAME}${value}`)
   readonly image: string;
 
   @Expose()

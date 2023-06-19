@@ -25,6 +25,7 @@ export class OrderController {
   }
 
   @Get('cart')
+  @UseInterceptors(ClassSerializerInterceptor)
   getCartProducts(
     @Query('products', new ParseArrayPipe({ items: Number }))
     productsIds: number[],
@@ -33,6 +34,7 @@ export class OrderController {
   }
 
   @Get(':orderId')
+  @UseInterceptors(ClassSerializerInterceptor)
   getOrderById(@Param('orderId', ParseIntPipe) orderId: number) {
     return this.orderService.find(orderId);
   }

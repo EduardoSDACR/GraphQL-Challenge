@@ -1,12 +1,15 @@
-import { Prisma, Product } from '@prisma/client';
-import { Exclude, Expose } from 'class-transformer';
+import { Prisma } from '@prisma/client';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { ProductDto } from '../../product/dto';
 
 @Exclude()
 export class CartDto {
   @Expose()
-  readonly products: Partial<Product>[];
+  @Type(() => ProductDto)
+  readonly products: ProductDto[];
 
   @Expose()
+  @Transform(({ value }) => JSON.parse(value))
   readonly totalPrice: Prisma.Decimal;
 
   constructor(partial: Partial<CartDto>) {

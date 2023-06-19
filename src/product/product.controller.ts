@@ -29,11 +29,13 @@ export class ProductController {
   constructor(private product: ProductService) {}
 
   @Get()
+  @UseInterceptors(ClassSerializerInterceptor)
   getProducts() {
     return this.product.getProducts();
   }
 
   @Get('offset')
+  @UseInterceptors(ClassSerializerInterceptor)
   getProductsListWithOffset(
     @Query('skip', ParseIntPipe) skip: number,
     @Query('take', ParseIntPipe) take: number,
@@ -48,6 +50,7 @@ export class ProductController {
   }
 
   @Get('category/:categoryId')
+  @UseInterceptors(ClassSerializerInterceptor)
   getProductsByCategory(@Param('categoryId', ParseIntPipe) categoryId: number) {
     return this.product.findCategoryProducts(categoryId);
   }

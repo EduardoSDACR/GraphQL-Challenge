@@ -13,7 +13,7 @@ export class OrderDto {
 
   @Expose()
   @Type(() => ProductDto)
-  readonly products: Partial<ProductDto>[];
+  readonly products: ProductDto[];
 
   constructor(partial: Partial<OrderDto>) {
     Object.assign(this, partial);
