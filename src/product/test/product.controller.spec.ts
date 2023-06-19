@@ -32,6 +32,15 @@ describe('ProductController', () => {
     expect(result.length).toEqual(productsMock.length);
   });
 
+  it('getProductsListWithOffset should return a certain list of products', async () => {
+    const result = await controller.getProductsListWithOffset(
+      faker.number.int(),
+      faker.number.int(),
+    );
+
+    expect(result.length).toEqual(productsMock.length);
+  });
+
   it('getProductById should return one product', async () => {
     const result = await controller.getProductById(faker.number.int());
 
@@ -102,7 +111,7 @@ describe('ProductController', () => {
     expect(result).toBeUndefined();
   });
 
-  it('should return the updated product', async () => {
+  it('updateProductImage should return the updated product', async () => {
     const image: Express.Multer.File = {
       fieldname: faker.lorem.word(),
       originalname: faker.lorem.word(),

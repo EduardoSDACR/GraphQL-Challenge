@@ -43,6 +43,19 @@ describe('ProductService', () => {
     });
   });
 
+  describe('offset', () => {
+    it('should return a certain list of products', async () => {
+      prismaService.product.findMany.mockResolvedValueOnce(productsMock);
+
+      const result = await productService.getOffsetPaginationProducts(
+        faker.number.int(),
+        faker.number.int(),
+      );
+
+      expect(result.length).toEqual(productsMock.length);
+    });
+  });
+
   describe('find', () => {
     it('should return product found', async () => {
       const productNotDisabledMock = {
