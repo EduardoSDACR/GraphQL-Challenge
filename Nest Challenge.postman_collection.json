@@ -1,0 +1,689 @@
+{
+	"info": {
+		"_postman_id": "192a28e3-7213-45d9-afba-e69ff3e90083",
+		"name": "Nest Challenge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24682984"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Sign In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.globals.set(\"token\", jsonData.accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"eduardo6@hotmail.com\",\n    \"password\": \"pass\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/auth/signin",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Up",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.globals.set(\"token\", jsonData.accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"eduardo\",\n    \"lastName\": \"rodriguez\",\n    \"email\": \"eduardo6@hotmail.com\",\n    \"password\": \"pass\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/auth/signup",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign Out",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/auth/signout",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"signout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "All products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/products",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Products with pagination",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/products/offset?skip=0&take=3",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products",
+								"offset"
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "take",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "One Product details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/products/34",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products",
+								"34"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Products by category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/products/category/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products",
+								"category",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "new",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "new",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "25",
+									"type": "text"
+								},
+								{
+									"key": "categoryId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/Users/eduardo/Downloads/sample.avif"
+								},
+								{
+									"key": "stock",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{apiUrl}}/products",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Cubo 4x4244\",\n    \"description\": \"More complexw\",\n    \"price\": 411.57,\n    \"stock\": 101,\n    \"categoryId\": 1,\n    \"isDisabled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/products/33",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products",
+								"33"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar producto",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Cubo 4x4\",\n    \"description\": \"More complex\",\n    \"price\": 412.57,\n    \"stock\": 10,\n    \"category_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/products/33",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products",
+								"33"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Disable product",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Cubo 4x4\",\n    \"description\": \"More complex\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/products/disable/34",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products",
+								"disable",
+								"34"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Like product",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/products/like/34",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products",
+								"like",
+								"34"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Image",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/Users/eduardo/Downloads/sample.jpeg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{apiUrl}}/products/image/18",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"products",
+								"image",
+								"18"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Client orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/orders/client/5",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"orders",
+								"client",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cart with products",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cart\": [\n        7,\n        4,\n        2,\n        3\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/orders/cart?products=27,1,4,3",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"orders",
+								"cart"
+							],
+							"query": [
+								{
+									"key": "products",
+									"value": "27,1,4,3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show one order",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/orders/2",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"orders",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buy and create order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cart\": [\n        1,\n        2,\n        13\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/orders/buy?products=2,4,1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"orders",
+								"buy"
+							],
+							"query": [
+								{
+									"key": "products",
+									"value": "2,4,1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "My orders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/orders/user/me",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"orders",
+								"user",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Todas las categorias",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/categories",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear categoría",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Categoria 1\",\n    \"description\": \"categoria 1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/categories",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar categoría",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/categories/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
