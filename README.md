@@ -3,8 +3,7 @@
 This is a API Rest project with services related to manage a product store. 
 
 ## API Documentation:
-You can check the documentation of the project with the route "/api-docs", but also you can use the next url to see it (will take some minutes to charge):
-- https://nest-nerdery-challenge.onrender.com/api-docs
+You can check the documentation of the project checking the route "/api".
 
 ## Installation
 
