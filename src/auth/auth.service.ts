@@ -10,7 +10,8 @@ import { ConfigService } from '@nestjs/config';
 import { compare, hash } from 'bcrypt';
 import { PrismaErrorEnum } from '../utils/enums';
 import { PrismaService } from '../prisma/prisma.service';
-import { SignInDto, SignUpDto, TokenDto } from './dto';
+import { SignInInput, SignUpInput } from './dto';
+import { Token as TokenModel } from './models';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signIn(input: SignInDto): Promise<TokenDto> {
+  async signIn(input: SignInInput): Promise<TokenModel> {
     const user = await this.prisma.user.findUnique({
       where: {
         email: input.email,
@@ -42,7 +43,7 @@ export class AuthService {
     return this.generateAccessToken(token.jti);
   }
 
-  async signUp({ password, ...input }: SignUpDto): Promise<TokenDto> {
+  async signUp({ password, ...input }: SignUpInput): Promise<TokenModel> {
     const userFound = await this.prisma.user.findUnique({
       where: { email: input.email },
       select: { id: true },
@@ -110,7 +111,7 @@ export class AuthService {
     }
   }
 
-  generateAccessToken(sub: string): TokenDto {
+  generateAccessToken(sub: string): TokenModel {
     const secret = this.config.get('JWT_SECRET_KEY');
     const expiresIn = this.config.get('JWT_EXPIRATION_TIME');
     const accessToken = this.jwtService.sign(
@@ -120,9 +121,9 @@ export class AuthService {
       { expiresIn, secret },
     );
 
-    return new TokenDto({
+    return {
       accessToken,
       exp: expiresIn,
-    });
+    };
   }
 }
