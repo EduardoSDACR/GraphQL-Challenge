@@ -11,7 +11,7 @@ import { PrismaClient } from '@prisma/client';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SignInDto } from '../dto';
+import { SignInInput } from '../dto';
 import { AuthService } from '../auth.service';
 import { tokenMock, userMock } from './auth.mock';
 
@@ -35,7 +35,7 @@ describe('AuthService', () => {
   describe('signIn', () => {
     it('should throw an error when user email is not found', async () => {
       prismaService.user.findUnique.mockResolvedValueOnce(null);
-      const input: SignInDto = {
+      const input: SignInInput = {
         email: faker.internet.email(),
         password: faker.lorem.word(),
       };
@@ -50,7 +50,7 @@ describe('AuthService', () => {
       jest
         .spyOn(bcrypt, 'compare')
         .mockImplementation(() => Promise.resolve(false));
-      const input: SignInDto = {
+      const input: SignInInput = {
         email: faker.internet.email(),
         password: faker.lorem.word(),
       };
@@ -71,7 +71,7 @@ describe('AuthService', () => {
       jest
         .spyOn(bcrypt, 'compare')
         .mockImplementation(() => Promise.resolve(true));
-      const input: SignInDto = {
+      const input: SignInInput = {
         email: faker.internet.email(),
         password: faker.lorem.word(),
       };

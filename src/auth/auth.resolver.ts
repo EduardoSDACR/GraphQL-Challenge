@@ -3,7 +3,7 @@ import { UseGuards } from '@nestjs/common';
 import { SignInInput, SignUpInput } from './dto';
 import { AuthService } from './auth.service';
 import { JwtGuard } from './guard';
-import { Token } from './models';
+import { Token } from './model';
 
 @Resolver()
 export class AuthResolver {

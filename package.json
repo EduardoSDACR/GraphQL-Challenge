@@ -91,7 +91,7 @@
     },
     "collectCoverageFrom": [
       "**/*.service.ts",
-      "**/*.controller.ts",
+      "**/*.resolver.ts",
       "**/utils/*.ts"
     ],
     "coverageDirectory": "../coverage",

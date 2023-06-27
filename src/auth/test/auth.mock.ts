@@ -1,6 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { Token, User } from '@prisma/client';
-import { TokenDto } from '../dto';
+import { Token as TokenModel } from '../model';
+
+export const RequestWithAuthHeaderMock = {
+  headers: {
+    authorization: faker.string.nanoid(),
+  },
+};
 
 export const userMock: User = {
   id: faker.number.int(),
@@ -22,7 +28,7 @@ export const tokenMock: Token = {
   jti: faker.string.uuid(),
 };
 
-export const credentialsMock: TokenDto = {
+export const credentialsMock: TokenModel = {
   accessToken: faker.string.nanoid(),
   exp: faker.string.numeric(),
 };

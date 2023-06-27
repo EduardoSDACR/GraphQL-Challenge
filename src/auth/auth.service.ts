@@ -11,7 +11,7 @@ import { compare, hash } from 'bcrypt';
 import { PrismaErrorEnum } from '../utils/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignInInput, SignUpInput } from './dto';
-import { Token as TokenModel } from './models';
+import { Token as TokenModel } from './model';
 
 @Injectable()
 export class AuthService {
