@@ -27,6 +27,9 @@ import { OrderModule } from './order/order.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      buildSchemaOptions: {
+        numberScalarMode: 'integer',
+      },
     }),
     PrismaModule,
     AuthModule,

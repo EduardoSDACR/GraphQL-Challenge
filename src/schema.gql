@@ -7,9 +7,23 @@ type Token {
   exp: String!
 }
 
+type Product {
+  id: ID!
+  name: String!
+  description: String!
+  price: Float!
+  image: String!
+  likes: Int!
+  stock: Int!
+  categoryId: Int!
+}
+
 type Query {
   signIn(input: SignInInput!): Token!
-  signOut: Boolean!
+  products: [Product!]!
+  productsWithPagination(skip: Int!, take: Int!): [Product!]!
+  product(productId: Int!): Product!
+  productsByCategory(categoryId: Int!): [Product!]!
 }
 
 input SignInInput {
@@ -19,6 +33,13 @@ input SignInInput {
 
 type Mutation {
   signUp(input: SignUpInput!): Token!
+  signOut: Boolean!
+  addProduct(input: CreateProductInput!, image: Upload!): Product!
+  updateProduct(input: UpdateProductInput!, productId: Int!): Product!
+  updateProductImage(productId: Int!, image: Upload!): Product!
+  deleteProduct(productId: Int!): Boolean!
+  disableProduct(productId: Int!): Boolean!
+  likeProduct(productId: Int!): Boolean!
 }
 
 input SignUpInput {
@@ -26,4 +47,23 @@ input SignUpInput {
   lastName: String!
   email: String!
   password: String!
+}
+
+input CreateProductInput {
+  name: String!
+  description: String!
+  price: Float!
+  stock: Int!
+  categoryId: Int!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UpdateProductInput {
+  name: String
+  description: String
+  price: Float
+  stock: Int
+  categoryId: Int
 }

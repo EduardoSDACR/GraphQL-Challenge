@@ -20,7 +20,7 @@ export class AuthResolver {
   }
 
   @UseGuards(JwtGuard)
-  @Query(() => Boolean)
+  @Mutation(() => Boolean)
   async signOut(@Context('req') req): Promise<boolean> {
     const jwt = req.headers.authorization.replace('Bearer ', '');
 

@@ -6,8 +6,7 @@ import { faker } from '@faker-js/faker';
 import { NotFoundException } from '@nestjs/common';
 import { ProductService } from '../product.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateProductDto, ProductDto } from '../dto';
-import { UpdateProductDto } from '../dto';
+import { CreateProductInput, UpdateProductInput } from '../dto';
 import {
   prismaForeignKeyExceptionMock,
   prismaNotFoundExceptionMock,
@@ -69,9 +68,7 @@ describe('ProductService', () => {
 
       const result = await productService.find(faker.number.int());
 
-      expect(result).toMatchObject(
-        new ProductDto({ ...productNotDisabledMock }),
-      );
+      expect(result).toMatchObject(productNotDisabledMock);
     });
 
     it('should throw an error when product is not found', async () => {
@@ -110,7 +107,7 @@ describe('ProductService', () => {
 
   describe('create', () => {
     it('should throw an error if product category does not exist', async () => {
-      const input: CreateProductDto = {
+      const input: CreateProductInput = {
         name: faker.commerce.productName(),
         description: faker.lorem.sentence(),
         price: faker.number.float(),
@@ -127,7 +124,7 @@ describe('ProductService', () => {
     });
 
     it('should create a product', async () => {
-      const input: CreateProductDto = {
+      const input: CreateProductInput = {
         name: faker.commerce.productName(),
         description: faker.lorem.sentence(),
         price: faker.number.float(),
@@ -138,27 +135,27 @@ describe('ProductService', () => {
 
       const result = await productService.create(input, faker.lorem.word());
 
-      expect(result).toMatchObject(new ProductDto(productMock));
+      expect(result).toMatchObject(productMock);
     });
   });
 
   describe('update', () => {
     it('should update a product', async () => {
       prismaService.product.update.mockResolvedValueOnce(productMock);
-      const input: UpdateProductDto = {
+      const input: UpdateProductInput = {
         name: faker.lorem.word(),
       };
 
       const result = await productService.update(input, faker.number.int());
 
-      expect(result).toMatchObject(new ProductDto(productMock));
+      expect(result).toMatchObject(productMock);
     });
 
     it('should throw an error when product does not exist', async () => {
       prismaService.product.update.mockRejectedValueOnce(
         prismaNotFoundExceptionMock,
       );
-      const input: UpdateProductDto = {
+      const input: UpdateProductInput = {
         description: faker.lorem.word(),
       };
 
@@ -171,7 +168,7 @@ describe('ProductService', () => {
       prismaService.product.update.mockRejectedValueOnce(
         prismaForeignKeyExceptionMock,
       );
-      const input: UpdateProductDto = {
+      const input: UpdateProductInput = {
         stock: faker.number.int(),
       };
 
@@ -265,7 +262,7 @@ describe('ProductService', () => {
         faker.lorem.word(),
       );
 
-      expect(result).toMatchObject(new ProductDto(productMock));
+      expect(result).toMatchObject(productMock);
     });
 
     it('should throw an error when product does not exist', async () => {
