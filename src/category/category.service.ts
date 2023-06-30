@@ -6,18 +6,18 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaErrorEnum } from '../utils/enums';
-import { CategoryDto } from './dto';
-import { CreateCategoryDto } from './dto/create-category.dto';
+import { Category } from './model/category.model';
+import { CreateCategoryInput } from './dto';
 
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
-  async list(): Promise<CategoryDto[]> {
+  async list(): Promise<Category[]> {
     return this.prisma.category.findMany();
   }
 
-  async create(input: CreateCategoryDto): Promise<CategoryDto> {
+  async create(input: CreateCategoryInput): Promise<Category> {
     return this.prisma.category.create({
       data: {
         ...input,

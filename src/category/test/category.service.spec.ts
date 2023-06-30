@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { CategoryService } from '../category.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateCategoryDto } from '../dto/create-category.dto';
 import { prismaForeignKeyExceptionMock } from '../../product/test/product.mock';
+import { CreateCategoryInput } from '../dto';
 import { categoriesMock, categoryMock } from './category.mock';
 
 describe('CategoryService', () => {
@@ -41,7 +41,7 @@ describe('CategoryService', () => {
   describe('create', () => {
     it('should create a category', async () => {
       prismaService.category.create.mockResolvedValueOnce(categoryMock);
-      const input: CreateCategoryDto = {
+      const input: CreateCategoryInput = {
         name: faker.lorem.word(),
         description: faker.lorem.sentence(),
       };

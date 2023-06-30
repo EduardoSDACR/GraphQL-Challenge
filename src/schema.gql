@@ -18,6 +18,12 @@ type Product {
   categoryId: Int!
 }
 
+type Category {
+  id: ID!
+  name: String!
+  description: String!
+}
+
 type Cart {
   products: [Product!]!
   totalPrice: Float!
@@ -35,6 +41,7 @@ type Query {
   productsWithPagination(skip: Int!, take: Int!): [Product!]!
   product(productId: Int!): Product!
   productsByCategory(categoryId: Int!): [Product!]!
+  categories: [Category!]!
   clientOrders(userId: Int!): [Order!]!
   order(orderId: Int!): Order!
   cartProducts(productsIds: [Int!]!): Cart!
@@ -55,6 +62,8 @@ type Mutation {
   deleteProduct(productId: Int!): Boolean!
   disableProduct(productId: Int!): Boolean!
   likeProduct(productId: Int!): Boolean!
+  addCategory(input: CreateCategoryInput!): Category!
+  deleteCategory(categoryId: Int!): Boolean!
   buyOrderProducts(productsIds: [Int!]!): Order!
 }
 
@@ -82,4 +91,9 @@ input UpdateProductInput {
   price: Float
   stock: Int
   categoryId: Int
+}
+
+input CreateCategoryInput {
+  name: String!
+  description: String!
 }
