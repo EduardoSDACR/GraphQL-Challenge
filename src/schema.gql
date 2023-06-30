@@ -18,12 +18,27 @@ type Product {
   categoryId: Int!
 }
 
+type Cart {
+  products: [Product!]!
+  totalPrice: Float!
+}
+
+type Order {
+  id: ID!
+  total: Float!
+  products: [Product!]!
+}
+
 type Query {
   signIn(input: SignInInput!): Token!
   products: [Product!]!
   productsWithPagination(skip: Int!, take: Int!): [Product!]!
   product(productId: Int!): Product!
   productsByCategory(categoryId: Int!): [Product!]!
+  clientOrders(userId: Int!): [Order!]!
+  order(orderId: Int!): Order!
+  cartProducts(productsIds: [Int!]!): Cart!
+  myOrders: [Order!]!
 }
 
 input SignInInput {
@@ -40,6 +55,7 @@ type Mutation {
   deleteProduct(productId: Int!): Boolean!
   disableProduct(productId: Int!): Boolean!
   likeProduct(productId: Int!): Boolean!
+  buyOrderProducts(productsIds: [Int!]!): Order!
 }
 
 input SignUpInput {

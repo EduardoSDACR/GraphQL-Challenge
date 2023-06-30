@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { Order } from '@prisma/client';
 import { Prisma } from '@prisma/client';
-import { CartDto } from '../dto/cart.dto';
+import { productsMock } from '../../product/test/product.mock';
+import { Cart } from '../model';
 
 export const orderMock: Order = {
   id: faker.number.int(),
@@ -26,7 +27,7 @@ export const ordersMock: Order[] = [
   },
 ];
 
-export const cartMock: CartDto = {
+export const cartMock: Cart = {
   products: [],
   totalPrice: new Prisma.Decimal(faker.number.float()),
 };
@@ -36,4 +37,5 @@ export const orderServiceMock = {
   findCartProducts: jest.fn().mockResolvedValue(cartMock),
   find: jest.fn().mockResolvedValue(orderMock),
   buyOrderProducts: jest.fn().mockResolvedValue(orderMock),
+  findOrderProducts: jest.fn().mockResolvedValue(productsMock),
 };
