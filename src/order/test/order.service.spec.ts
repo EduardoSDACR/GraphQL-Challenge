@@ -10,7 +10,6 @@ import {
   prismaNotFoundExceptionMock,
   productsMock,
 } from '../../product/test/product.mock';
-import { OrderDto } from '../dto';
 import { orderMock, ordersMock } from './order.mock';
 
 describe('OrderService', () => {
@@ -66,7 +65,7 @@ describe('OrderService', () => {
 
       const result = await orderService.find(faker.number.int());
 
-      expect(result).toMatchObject(new OrderDto(orderMock));
+      expect(result).toMatchObject(orderMock);
     });
   });
 
@@ -80,7 +79,7 @@ describe('OrderService', () => {
         faker.number.int(),
       ]);
 
-      expect(result).toMatchObject(new OrderDto(result));
+      expect(result).toMatchObject(result);
     });
 
     it('should throw an error when some of the product ids doesnt find a product', async () => {
@@ -95,6 +94,16 @@ describe('OrderService', () => {
       ).rejects.toThrowError(
         new NotFoundException('One of the products does not exist'),
       );
+    });
+  });
+
+  describe('findOrderProducts', () => {
+    it('should return order products', async () => {
+      prismaService.product.findMany.mockResolvedValueOnce(productsMock);
+
+      const result = await orderService.findOrderProducts(faker.number.int());
+
+      expect(result.length).toEqual(productsMock.length);
     });
   });
 });
