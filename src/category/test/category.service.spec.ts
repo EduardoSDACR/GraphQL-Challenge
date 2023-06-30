@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import {
   NotFoundException,
@@ -81,6 +81,28 @@ describe('CategoryService', () => {
       ).rejects.toThrowError(
         new UnprocessableEntityException('This category is being used'),
       );
+    });
+
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.category.findUnique.mockResolvedValueOnce(categoryMock);
+      prismaService.category.delete.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        categoryService.delete(faker.number.int()),
+      ).rejects.toThrowError(prismaError);
+    });
+
+    it('should throw an error', async () => {
+      prismaService.category.findUnique.mockResolvedValueOnce(categoryMock);
+      prismaService.category.delete.mockRejectedValueOnce(new Error());
+
+      await expect(
+        categoryService.delete(faker.number.int()),
+      ).rejects.toThrowError(new Error());
     });
   });
 });

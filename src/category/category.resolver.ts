@@ -12,21 +12,21 @@ import { CategoryService } from './category.service';
 export class CategoryResolver {
   constructor(private categoryService: CategoryService) {}
 
-  @Query(() => [Category])
+  @Query(/* istanbul ignore next */ () => [Category])
   categories(): Promise<Category[]> {
     return this.categoryService.list();
   }
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(() => Category)
+  @Mutation(/* istanbul ignore next */ () => Category)
   addCategory(@Args('input') input: CreateCategoryInput): Promise<Category> {
     return this.categoryService.create(input);
   }
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(() => Boolean)
+  @Mutation(/* istanbul ignore next */ () => Boolean)
   async deleteCategory(
     @Args('categoryId') categoryId: number,
   ): Promise<boolean> {

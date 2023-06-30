@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { createMock } from '@golevelup/ts-jest';
 import { faker } from '@faker-js/faker';
 import { NotFoundException } from '@nestjs/common';
@@ -123,6 +123,40 @@ describe('ProductService', () => {
       ).rejects.toThrowError(new NotFoundException('Category not found'));
     });
 
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      const input: CreateProductInput = {
+        name: faker.commerce.productName(),
+        description: faker.lorem.sentence(),
+        price: faker.number.float(),
+        stock: faker.number.int(),
+        categoryId: faker.number.int(),
+      };
+      prismaService.product.create.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        productService.create(input, faker.lorem.word()),
+      ).rejects.toThrowError(prismaError);
+    });
+
+    it('should throw an error', async () => {
+      const input: CreateProductInput = {
+        name: faker.commerce.productName(),
+        description: faker.lorem.sentence(),
+        price: faker.number.float(),
+        stock: faker.number.int(),
+        categoryId: faker.number.int(),
+      };
+      prismaService.product.create.mockRejectedValueOnce(new Error());
+
+      await expect(
+        productService.create(input, faker.lorem.word()),
+      ).rejects.toThrowError(new Error());
+    });
+
     it('should create a product', async () => {
       const input: CreateProductInput = {
         name: faker.commerce.productName(),
@@ -176,6 +210,32 @@ describe('ProductService', () => {
         productService.update(input, faker.number.int()),
       ).rejects.toThrowError(new NotFoundException('Category not found'));
     });
+
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.product.update.mockRejectedValueOnce(prismaError);
+      const input: UpdateProductInput = {
+        stock: faker.number.int(),
+      };
+
+      await expect(
+        productService.update(input, faker.number.int()),
+      ).rejects.toThrowError(prismaError);
+    });
+
+    it('should throw an error', async () => {
+      prismaService.product.update.mockRejectedValueOnce(new Error());
+      const input: UpdateProductInput = {
+        stock: faker.number.int(),
+      };
+
+      await expect(
+        productService.update(input, faker.number.int()),
+      ).rejects.toThrowError(new Error());
+    });
   });
 
   describe('delete', () => {
@@ -215,6 +275,26 @@ describe('ProductService', () => {
         productService.disableProduct(faker.number.int()),
       ).rejects.toThrowError(new NotFoundException('Product not found'));
     });
+
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.product.update.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        productService.disableProduct(faker.number.int()),
+      ).rejects.toThrowError(prismaError);
+    });
+
+    it('should throw an error', async () => {
+      prismaService.product.update.mockRejectedValueOnce(new Error());
+
+      await expect(
+        productService.disableProduct(faker.number.int()),
+      ).rejects.toThrowError(new Error());
+    });
   });
 
   describe('likeProduct', () => {
@@ -251,6 +331,28 @@ describe('ProductService', () => {
         productService.likeProduct(faker.number.int(), faker.string.uuid()),
       ).rejects.toThrowError(new NotFoundException('Product not found'));
     });
+
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.product.findMany.mockResolvedValueOnce([]);
+      prismaService.product.update.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        productService.likeProduct(faker.number.int(), faker.string.uuid()),
+      ).rejects.toThrowError(new NotFoundException('Product not found'));
+    });
+
+    it('should throw an error', async () => {
+      prismaService.product.findMany.mockResolvedValueOnce([]);
+      prismaService.product.update.mockRejectedValueOnce(new Error());
+
+      await expect(
+        productService.likeProduct(faker.number.int(), faker.string.uuid()),
+      ).rejects.toThrowError(new Error());
+    });
   });
 
   describe('updateProductImage', () => {
@@ -276,6 +378,32 @@ describe('ProductService', () => {
           faker.lorem.word(),
         ),
       ).rejects.toThrowError(new NotFoundException('Product not found'));
+    });
+
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.product.update.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        productService.updateProductImage(
+          faker.number.int(),
+          faker.lorem.word(),
+        ),
+      ).rejects.toThrowError(prismaError);
+    });
+
+    it('should throw an error', async () => {
+      prismaService.product.update.mockRejectedValueOnce(new Error());
+
+      await expect(
+        productService.updateProductImage(
+          faker.number.int(),
+          faker.lorem.word(),
+        ),
+      ).rejects.toThrowError(new Error());
     });
   });
 });

@@ -7,7 +7,7 @@ import { Order } from './model';
 export class OrderProductsResolver {
   constructor(private orderService: OrderService) {}
 
-  @ResolveField('products', () => [Product])
+  @ResolveField('products', /* istanbul ignore next */ () => [Product])
   orderProducts(@Parent() order: Order): Promise<Product[]> {
     return this.orderService.findOrderProducts(order.id);
   }

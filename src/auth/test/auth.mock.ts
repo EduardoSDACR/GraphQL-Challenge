@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Token, User } from '@prisma/client';
+import { Prisma, Token, User } from '@prisma/client';
 import { Token as TokenModel } from '../model';
 
 export const RequestWithAuthHeaderMock = {
@@ -38,3 +38,9 @@ export const authServiceMock = {
   signUp: jest.fn().mockResolvedValue(credentialsMock),
   signOut: jest.fn().mockResolvedValue(undefined),
 };
+
+export const prismaForeignKeyExceptionMock =
+  new Prisma.PrismaClientKnownRequestError('', {
+    code: 'P2003',
+    clientVersion: '4.15.0',
+  });

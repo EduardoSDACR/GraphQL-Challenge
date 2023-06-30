@@ -13,7 +13,11 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SignInInput } from '../dto';
 import { AuthService } from '../auth.service';
-import { tokenMock, userMock } from './auth.mock';
+import {
+  prismaForeignKeyExceptionMock,
+  tokenMock,
+  userMock,
+} from './auth.mock';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -126,7 +130,7 @@ describe('AuthService', () => {
 
   describe('signOut', () => {
     it('should throw an error when user session is not found', async () => {
-      prismaService.token.delete.mockRejectedValue(
+      prismaService.token.delete.mockRejectedValueOnce(
         new Prisma.PrismaClientKnownRequestError('', {
           code: 'P2025',
           clientVersion: '4.15.0',
@@ -138,11 +142,63 @@ describe('AuthService', () => {
       ).rejects.toThrowError(new NotFoundException('Session not found'));
     });
 
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.token.delete.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        authService.signOut(faker.string.nanoid()),
+      ).rejects.toThrowError(prismaError);
+    });
+
     it('should delete user session', async () => {
       prismaService.token.delete.mockResolvedValueOnce(tokenMock);
       const result = await authService.signOut(faker.string.nanoid());
 
       expect(result).toBeUndefined();
+    });
+
+    it('should throw an error', async () => {
+      prismaService.token.delete.mockRejectedValueOnce(new Error());
+
+      await expect(
+        authService.signOut(faker.string.nanoid()),
+      ).rejects.toThrowError(new Error());
+    });
+  });
+
+  describe('createToken', () => {
+    it('should throw an error when user is not found', async () => {
+      prismaService.token.create.mockRejectedValueOnce(
+        prismaForeignKeyExceptionMock,
+      );
+
+      await expect(
+        authService.createToken(faker.number.int()),
+      ).rejects.toThrowError(new NotFoundException('User not found'));
+    });
+
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.token.create.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        authService.createToken(faker.number.int()),
+      ).rejects.toThrowError(prismaError);
+    });
+
+    it('should throw an error', async () => {
+      prismaService.token.create.mockRejectedValueOnce(new Error());
+
+      await expect(
+        authService.createToken(faker.number.int()),
+      ).rejects.toThrowError(new Error());
     });
   });
 });

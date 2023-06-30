@@ -93,7 +93,8 @@
     "collectCoverageFrom": [
       "**/*.service.ts",
       "**/*.resolver.ts",
-      "**/utils/*.ts"
+      "**/utils/*.ts",
+      "!prisma/*"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

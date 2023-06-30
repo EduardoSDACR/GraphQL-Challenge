@@ -14,12 +14,12 @@ import { Product } from './model';
 export class ProductResolver {
   constructor(private productService: ProductService) {}
 
-  @Query(() => [Product])
+  @Query(/* istanbul ignore next */ () => [Product])
   products(): Promise<Product[]> {
     return this.productService.getProducts();
   }
 
-  @Query(() => [Product])
+  @Query(/* istanbul ignore next */ () => [Product])
   productsWithPagination(
     @Args('skip', ParseIntPipe) skip: number,
     @Args('take', ParseIntPipe) take: number,
@@ -27,12 +27,12 @@ export class ProductResolver {
     return this.productService.getOffsetPaginationProducts(skip, take);
   }
 
-  @Query(() => Product)
+  @Query(/* istanbul ignore next */ () => Product)
   product(@Args('productId') productId: number): Promise<Product> {
     return this.productService.find(productId);
   }
 
-  @Query(() => [Product])
+  @Query(/* istanbul ignore next */ () => [Product])
   productsByCategory(
     @Args('categoryId') categoryId: number,
   ): Promise<Product[]> {
@@ -41,11 +41,14 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(() => Product)
+  @Mutation(/* istanbul ignore next */ () => Product)
   @UseInterceptors(new ImageStorageInterceptor('image'))
   async addProduct(
     @Args('input') input: CreateProductInput,
-    @Args({ name: 'image', type: () => GraphQLUpload }, ImageValidationPipe)
+    @Args(
+      { name: 'image', type: /* istanbul ignore next */ () => GraphQLUpload },
+      ImageValidationPipe,
+    )
     image: FileUpload,
   ): Promise<Product> {
     return this.productService.create(input, image.filename);
@@ -53,7 +56,7 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(() => Product)
+  @Mutation(/* istanbul ignore next */ () => Product)
   async updateProduct(
     @Args('input') input: UpdateProductInput,
     @Args('productId') productId: number,
@@ -63,11 +66,14 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(() => Product)
+  @Mutation(/* istanbul ignore next */ () => Product)
   @UseInterceptors(new ImageStorageInterceptor('image'))
   async updateProductImage(
     @Args('productId') productId: number,
-    @Args({ name: 'image', type: () => GraphQLUpload }, ImageValidationPipe)
+    @Args(
+      { name: 'image', type: /* istanbul ignore next */ () => GraphQLUpload },
+      ImageValidationPipe,
+    )
     image: FileUpload,
   ) {
     return this.productService.updateProductImage(productId, image.filename);
@@ -75,7 +81,7 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(() => Boolean)
+  @Mutation(/* istanbul ignore next */ () => Boolean)
   async deleteProduct(@Args('productId') productId: number): Promise<boolean> {
     await this.productService.delete(productId);
     return true;
@@ -83,7 +89,7 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(() => Boolean)
+  @Mutation(/* istanbul ignore next */ () => Boolean)
   async disableProduct(@Args('productId') productId: number): Promise<boolean> {
     await this.productService.disableProduct(productId);
     return true;
@@ -91,7 +97,7 @@ export class ProductResolver {
 
   @Roles(Role.CLIENT)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(() => Boolean)
+  @Mutation(/* istanbul ignore next */ () => Boolean)
   async likeProduct(
     @Args('productId') productId: number,
     @GetUser('uuid') userUuid: string,

@@ -75,7 +75,7 @@ export class OrderService {
     });
 
     if (!order) {
-      throw new NotFoundException();
+      throw new NotFoundException('Order not found');
     }
 
     return order;

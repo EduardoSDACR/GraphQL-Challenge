@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { NotFoundException } from '@nestjs/common';
 import { OrderService } from '../order.service';
@@ -67,6 +67,14 @@ describe('OrderService', () => {
 
       expect(result).toMatchObject(orderMock);
     });
+
+    it('should throw an error when order is not found', async () => {
+      prismaService.order.findUnique.mockResolvedValueOnce(null);
+
+      await expect(orderService.find(faker.number.int())).rejects.toThrowError(
+        new NotFoundException('Order not found'),
+      );
+    });
   });
 
   describe('buyOrderProducts', () => {
@@ -94,6 +102,30 @@ describe('OrderService', () => {
       ).rejects.toThrowError(
         new NotFoundException('One of the products does not exist'),
       );
+    });
+
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.user.findUnique.mockResolvedValueOnce(userMock);
+      prismaService.product.findMany.mockResolvedValueOnce(productsMock);
+      prismaService.order.create.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        orderService.buyOrderProducts(faker.number.int(), []),
+      ).rejects.toThrowError(prismaError);
+    });
+
+    it('should throw an error', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(userMock);
+      prismaService.product.findMany.mockResolvedValueOnce(productsMock);
+      prismaService.order.create.mockRejectedValueOnce(new Error());
+
+      await expect(
+        orderService.buyOrderProducts(faker.number.int(), []),
+      ).rejects.toThrowError(new Error());
     });
   });
 

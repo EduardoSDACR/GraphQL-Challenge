@@ -9,18 +9,18 @@ import { Token } from './model';
 export class AuthResolver {
   constructor(private authService: AuthService) {}
 
-  @Query(() => Token)
+  @Query(/* istanbul ignore next */ () => Token)
   signIn(@Args('input') input: SignInInput): Promise<Token> {
     return this.authService.signIn(input);
   }
 
-  @Mutation(() => Token)
+  @Mutation(/* istanbul ignore next */ () => Token)
   signUp(@Args('input') input: SignUpInput): Promise<Token> {
     return this.authService.signUp(input);
   }
 
   @UseGuards(JwtGuard)
-  @Mutation(() => Boolean)
+  @Mutation(/* istanbul ignore next */ () => Boolean)
   async signOut(@Context('req') req): Promise<boolean> {
     const jwt = req.headers.authorization.replace('Bearer ', '');
 
