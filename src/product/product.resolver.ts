@@ -41,7 +41,10 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(/* istanbul ignore next */ () => Product)
+  @Mutation(/* istanbul ignore next */ () => Product, {
+    description:
+      'Add a new product. To upload an image you need to set a header named "Apollo-Require-Preflight" to true.',
+  })
   @UseInterceptors(new ImageStorageInterceptor('image'))
   async addProduct(
     @Args('input') input: CreateProductInput,
@@ -56,7 +59,9 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(/* istanbul ignore next */ () => Product)
+  @Mutation(/* istanbul ignore next */ () => Product, {
+    description: 'Update an existing product data',
+  })
   async updateProduct(
     @Args('input') input: UpdateProductInput,
     @Args('productId') productId: number,
@@ -66,7 +71,10 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(/* istanbul ignore next */ () => Product)
+  @Mutation(/* istanbul ignore next */ () => Product, {
+    description:
+      'Update the image of a specific product. Header "Apollo-Require-Preflight" with true as value is needed',
+  })
   @UseInterceptors(new ImageStorageInterceptor('image'))
   async updateProductImage(
     @Args('productId') productId: number,
@@ -81,7 +89,9 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(/* istanbul ignore next */ () => Boolean)
+  @Mutation(/* istanbul ignore next */ () => Boolean, {
+    description: 'Delete an existing product',
+  })
   async deleteProduct(@Args('productId') productId: number): Promise<boolean> {
     await this.productService.delete(productId);
     return true;
@@ -89,7 +99,9 @@ export class ProductResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(/* istanbul ignore next */ () => Boolean)
+  @Mutation(/* istanbul ignore next */ () => Boolean, {
+    description: 'Make a product unavailable',
+  })
   async disableProduct(@Args('productId') productId: number): Promise<boolean> {
     await this.productService.disableProduct(productId);
     return true;
@@ -97,7 +109,10 @@ export class ProductResolver {
 
   @Roles(Role.CLIENT)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(/* istanbul ignore next */ () => Boolean)
+  @Mutation(/* istanbul ignore next */ () => Boolean, {
+    description:
+      'Add one like to an specific product. Send a second time to remove the like.',
+  })
   async likeProduct(
     @Args('productId') productId: number,
     @GetUser('uuid') userUuid: string,

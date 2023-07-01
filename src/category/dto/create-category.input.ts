@@ -1,7 +1,9 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 import { Field, InputType } from '@nestjs/graphql';
 
-@InputType()
+@InputType({
+  description: 'Information to create a new category',
+})
 export class CreateCategoryInput {
   @Field()
   @IsString()

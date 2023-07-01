@@ -17,7 +17,7 @@ const imageURLMiddleware: FieldMiddleware = async (
   return `${process.env.DOMAIN_NAME}${value}`;
 };
 
-@ObjectType()
+@ObjectType({ description: 'Contains information about a product' })
 export class Product {
   @Field(() => ID)
   readonly id: number;

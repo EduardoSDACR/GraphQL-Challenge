@@ -1,7 +1,9 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Field, InputType } from '@nestjs/graphql';
 
-@InputType()
+@InputType({
+  description: 'Information to register a new user inside of the application',
+})
 export class SignUpInput {
   @Field()
   @IsString()

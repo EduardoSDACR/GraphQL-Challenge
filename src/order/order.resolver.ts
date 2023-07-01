@@ -14,19 +14,26 @@ export class OrderResolver {
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Query(/* istanbul ignore next */ () => [Order])
+  @Query(/* istanbul ignore next */ () => [Order], {
+    description: 'Get all orders of specific client',
+  })
   clientOrders(@Args('userId') userId: number): Promise<Order[]> {
     return this.orderService.findClientOrders(userId);
   }
 
   @Roles(Role.MANAGER)
   @UseGuards(JwtGuard, RolesGuard)
-  @Query(/* istanbul ignore next */ () => Order)
+  @Query(/* istanbul ignore next */ () => Order, {
+    description: 'Check an specific order',
+  })
   order(@Args('orderId') orderId: number): Promise<Order> {
     return this.orderService.find(orderId);
   }
 
-  @Query(/* istanbul ignore next */ () => Cart)
+  @Query(/* istanbul ignore next */ () => Cart, {
+    description:
+      'Obtain all products of a cart using the ids of the products you need to check',
+  })
   cartProducts(
     @Args({ name: 'productsIds', type: /* istanbul ignore next */ () => [Int] })
     productsIds: number[],
@@ -36,14 +43,18 @@ export class OrderResolver {
 
   @Roles(Role.CLIENT)
   @UseGuards(JwtGuard, RolesGuard)
-  @Query(/* istanbul ignore next */ () => [Order])
+  @Query(/* istanbul ignore next */ () => [Order], {
+    description: 'Check all of your orders. Need to be authenticated',
+  })
   myOrders(@GetUser('id', ParseIntPipe) userId: number): Promise<Order[]> {
     return this.orderService.findClientOrders(userId);
   }
 
   @Roles(Role.CLIENT)
   @UseGuards(JwtGuard, RolesGuard)
-  @Mutation(/* istanbul ignore next */ () => Order)
+  @Mutation(/* istanbul ignore next */ () => Order, {
+    description: 'Purchase all products using its ids to create a new order',
+  })
   buyOrderProducts(
     @GetUser('id', ParseIntPipe) userId: number,
     @Args({ name: 'productsIds', type: /* istanbul ignore next */ () => [Int] })
