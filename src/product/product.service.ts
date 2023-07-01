@@ -3,14 +3,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaErrorEnum } from '../utils/enums';
-import { CreateProductDto, ProductDto } from './dto';
-import { UpdateProductDto } from './dto';
+import { CreateProductInput, UpdateProductInput } from './dto';
+import { Product } from './model';
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
-  async getProducts(): Promise<ProductDto[]> {
-    const products = await this.prisma.product.findMany({
+  async getProducts(): Promise<Product[]> {
+    return this.prisma.product.findMany({
       where: {
         isDisabled: false,
       },
@@ -25,15 +25,13 @@ export class ProductService {
         categoryId: true,
       },
     });
-
-    return products.map((product) => new ProductDto(product));
   }
 
   async getOffsetPaginationProducts(
     skip: number,
     take: number,
-  ): Promise<ProductDto[]> {
-    const products = await this.prisma.product.findMany({
+  ): Promise<Product[]> {
+    return this.prisma.product.findMany({
       skip,
       take,
       where: {
@@ -50,11 +48,9 @@ export class ProductService {
         categoryId: true,
       },
     });
-
-    return products.map((product) => new ProductDto(product));
   }
 
-  async find(productId: number): Promise<ProductDto> {
+  async find(productId: number): Promise<Product> {
     const product = await this.prisma.product.findUnique({
       where: {
         id: productId,
@@ -69,11 +65,11 @@ export class ProductService {
       throw new NotFoundException('Product not found');
     }
 
-    return new ProductDto(product);
+    return product;
   }
 
-  async findCategoryProducts(categoryId: number): Promise<ProductDto[]> {
-    const products = await this.prisma.product.findMany({
+  async findCategoryProducts(categoryId: number): Promise<Product[]> {
+    return this.prisma.product.findMany({
       where: {
         categoryId,
         isDisabled: false,
@@ -89,25 +85,18 @@ export class ProductService {
         categoryId: true,
       },
     });
-
-    return products.map((product) => new ProductDto(product));
   }
 
-  async create(
-    input: CreateProductDto,
-    imageName: string,
-  ): Promise<ProductDto> {
+  async create(input: CreateProductInput, imageName: string): Promise<Product> {
     const imagePath = join('/images/', imageName);
 
     try {
-      const result = await this.prisma.product.create({
+      return await this.prisma.product.create({
         data: {
           ...input,
           image: imagePath,
         },
       });
-
-      return new ProductDto(result);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
@@ -122,12 +111,9 @@ export class ProductService {
     }
   }
 
-  async update(
-    input: UpdateProductDto,
-    productId: number,
-  ): Promise<ProductDto> {
+  async update(input: UpdateProductInput, productId: number): Promise<Product> {
     try {
-      const product = await this.prisma.product.update({
+      return await this.prisma.product.update({
         where: {
           id: productId,
         },
@@ -135,8 +121,6 @@ export class ProductService {
           ...input,
         },
       });
-
-      return new ProductDto(product);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
@@ -204,6 +188,7 @@ export class ProductService {
         },
       },
     };
+
     const productLiked = await this.prisma.product.findMany({
       where: {
         id: productId,
@@ -247,11 +232,11 @@ export class ProductService {
     }
   }
 
-  async updateProductImage(productId: number, imageName): Promise<ProductDto> {
+  async updateProductImage(productId: number, imageName): Promise<Product> {
     const imagePath = join('/images/', imageName);
 
     try {
-      const product = await this.prisma.product.update({
+      return await this.prisma.product.update({
         where: {
           id: productId,
         },
@@ -259,8 +244,6 @@ export class ProductService {
           image: imagePath,
         },
       });
-
-      return new ProductDto(product);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {

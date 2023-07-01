@@ -1,13 +1,13 @@
 import { faker } from '@faker-js/faker';
-import { CategoryDto } from '../dto';
+import { Category } from '../model/category.model';
 
-export const categoryMock: CategoryDto = {
+export const categoryMock: Category = {
   id: faker.number.int(),
   name: faker.lorem.word(),
   description: faker.lorem.sentence(),
 };
 
-export const categoriesMock: CategoryDto[] = [
+export const categoriesMock: Category[] = [
   {
     ...categoryMock,
     id: 1,

@@ -2,14 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaErrorEnum } from '../utils/enums';
-import { CartDto } from './dto/cart.dto';
-import { OrderDto } from './dto';
+import { Product } from '../product/model';
+import { Cart, Order } from './model';
 
 @Injectable()
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
-  async findClientOrders(userId: number): Promise<OrderDto[]> {
+  async findClientOrders(userId: number): Promise<Order[]> {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -20,7 +20,7 @@ export class OrderService {
       throw new NotFoundException('User not found');
     }
 
-    const orders = await this.prisma.order.findMany({
+    return this.prisma.order.findMany({
       where: {
         userId: user.id,
       },
@@ -31,13 +31,9 @@ export class OrderService {
         products: true,
       },
     });
-
-    return orders.map((order) => {
-      return new OrderDto(order);
-    });
   }
 
-  async findCartProducts(productsIds: number[]): Promise<CartDto> {
+  async findCartProducts(productsIds: number[]): Promise<Cart> {
     const cart = await this.prisma.product.findMany({
       where: {
         id: {
@@ -60,13 +56,13 @@ export class OrderService {
       return total + +product.price;
     }, 0);
 
-    return new CartDto({
+    return {
       products: cart,
       totalPrice: new Prisma.Decimal(totalPrice),
-    });
+    };
   }
 
-  async find(orderId: number): Promise<OrderDto> {
+  async find(orderId: number): Promise<Order> {
     const order = await this.prisma.order.findUnique({
       where: {
         id: orderId,
@@ -75,32 +71,20 @@ export class OrderService {
         id: true,
         createdAt: true,
         total: true,
-        products: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            likes: true,
-            stock: true,
-            price: true,
-            image: true,
-            categoryId: true,
-          },
-        },
       },
     });
 
     if (!order) {
-      throw new NotFoundException();
+      throw new NotFoundException('Order not found');
     }
 
-    return new OrderDto(order);
+    return order;
   }
 
   async buyOrderProducts(
     userId: number,
     productsIds: number[],
-  ): Promise<OrderDto> {
+  ): Promise<Order> {
     const products = await this.prisma.product.findMany({
       where: {
         id: { in: productsIds },
@@ -113,7 +97,7 @@ export class OrderService {
     }, 0);
 
     try {
-      const order = await this.prisma.order.create({
+      return await this.prisma.order.create({
         data: {
           total: totalPrice,
           userId,
@@ -127,8 +111,6 @@ export class OrderService {
           products: true,
         },
       });
-
-      return new OrderDto(order);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
@@ -141,5 +123,17 @@ export class OrderService {
 
       throw error;
     }
+  }
+
+  async findOrderProducts(orderId): Promise<Product[]> {
+    return this.prisma.product.findMany({
+      where: {
+        orders: {
+          some: {
+            id: orderId,
+          },
+        },
+      },
+    });
   }
 }
