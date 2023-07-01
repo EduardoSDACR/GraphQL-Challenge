@@ -1,4 +1,4 @@
-import { createWriteStream } from 'fs';
+import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import {
   CallHandler,
   ExecutionContext,
@@ -25,6 +25,10 @@ export class ImageStorageInterceptor implements NestInterceptor {
     const fileExtension = filename.split('.').slice(-1)[0];
 
     if (validExtensions.includes(fileExtension)) {
+      if (!existsSync('./images')) {
+        mkdirSync('./images');
+      }
+
       const fileNewName = `${uuid()}.${fileExtension}`;
       const path = `./images/${fileNewName}`;
 
