@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { NotFoundException } from '@nestjs/common';
 import { OrderService } from '../order.service';
@@ -10,7 +10,6 @@ import {
   prismaNotFoundExceptionMock,
   productsMock,
 } from '../../product/test/product.mock';
-import { OrderDto } from '../dto';
 import { orderMock, ordersMock } from './order.mock';
 
 describe('OrderService', () => {
@@ -66,7 +65,15 @@ describe('OrderService', () => {
 
       const result = await orderService.find(faker.number.int());
 
-      expect(result).toMatchObject(new OrderDto(orderMock));
+      expect(result).toMatchObject(orderMock);
+    });
+
+    it('should throw an error when order is not found', async () => {
+      prismaService.order.findUnique.mockResolvedValueOnce(null);
+
+      await expect(orderService.find(faker.number.int())).rejects.toThrowError(
+        new NotFoundException('Order not found'),
+      );
     });
   });
 
@@ -80,7 +87,7 @@ describe('OrderService', () => {
         faker.number.int(),
       ]);
 
-      expect(result).toMatchObject(new OrderDto(result));
+      expect(result).toMatchObject(result);
     });
 
     it('should throw an error when some of the product ids doesnt find a product', async () => {
@@ -95,6 +102,40 @@ describe('OrderService', () => {
       ).rejects.toThrowError(
         new NotFoundException('One of the products does not exist'),
       );
+    });
+
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.user.findUnique.mockResolvedValueOnce(userMock);
+      prismaService.product.findMany.mockResolvedValueOnce(productsMock);
+      prismaService.order.create.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        orderService.buyOrderProducts(faker.number.int(), []),
+      ).rejects.toThrowError(prismaError);
+    });
+
+    it('should throw an error', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(userMock);
+      prismaService.product.findMany.mockResolvedValueOnce(productsMock);
+      prismaService.order.create.mockRejectedValueOnce(new Error());
+
+      await expect(
+        orderService.buyOrderProducts(faker.number.int(), []),
+      ).rejects.toThrowError(new Error());
+    });
+  });
+
+  describe('findOrderProducts', () => {
+    it('should return order products', async () => {
+      prismaService.product.findMany.mockResolvedValueOnce(productsMock);
+
+      const result = await orderService.findOrderProducts(faker.number.int());
+
+      expect(result.length).toEqual(productsMock.length);
     });
   });
 });

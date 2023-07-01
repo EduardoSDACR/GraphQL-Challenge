@@ -1,0 +1,155 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""Contains user credential data"""
+type Token {
+  accessToken: String!
+  exp: String!
+}
+
+"""Contains information about a product"""
+type Product {
+  id: ID!
+  name: String!
+  description: String!
+  price: Float!
+  image: String!
+  likes: Int!
+  stock: Int!
+  categoryId: Int!
+}
+
+"""Used to classify products"""
+type Category {
+  id: ID!
+  name: String!
+  description: String!
+}
+
+"""Contains products to buy later"""
+type Cart {
+  products: [Product!]!
+  totalPrice: Float!
+}
+
+"""Has information with products purchased"""
+type Order {
+  id: ID!
+  total: Float!
+  products: [Product!]!
+}
+
+type Query {
+  """With provided user access information obtain credentials"""
+  signIn(input: SignInInput!): Token!
+
+  """Use an email to receive a key to change your password"""
+  forgotPassword(email: String!): String!
+  products: [Product!]!
+  productsWithPagination(skip: Int!, take: Int!): [Product!]!
+  product(productId: Int!): Product!
+  productsByCategory(categoryId: Int!): [Product!]!
+
+  """Obtain all categories available"""
+  categories: [Category!]!
+
+  """Get all orders of specific client"""
+  clientOrders(userId: Int!): [Order!]!
+
+  """Check an specific order"""
+  order(orderId: Int!): Order!
+
+  """
+  Obtain all products of a cart using the ids of the products you need to check
+  """
+  cartProducts(productsIds: [Int!]!): Cart!
+
+  """Check all of your orders. Need to be authenticated"""
+  myOrders: [Order!]!
+}
+
+"""Information to access and get user credentials"""
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  """Register in the application"""
+  signUp(input: SignUpInput!): Token!
+
+  """End user session and delete credentials validation"""
+  signOut: Boolean!
+
+  """Use the key sent to email of user to change his password"""
+  changePassword(key: String!, newPassword: String!): Boolean!
+
+  """
+  Add a new product. To upload an image you need to set a header named "Apollo-Require-Preflight" to true.
+  """
+  addProduct(input: CreateProductInput!, image: Upload!): Product!
+
+  """Update an existing product data"""
+  updateProduct(input: UpdateProductInput!, productId: Int!): Product!
+
+  """
+  Update the image of a specific product. Header "Apollo-Require-Preflight" with true as value is needed
+  """
+  updateProductImage(productId: Int!, image: Upload!): Product!
+
+  """Delete an existing product"""
+  deleteProduct(productId: Int!): Boolean!
+
+  """Make a product unavailable"""
+  disableProduct(productId: Int!): Boolean!
+
+  """
+  Add one like to an specific product. Send a second time to remove the like.
+  """
+  likeProduct(productId: Int!): Boolean!
+
+  """Create a new category"""
+  addCategory(input: CreateCategoryInput!): Category!
+
+  """Delete a not used category"""
+  deleteCategory(categoryId: Int!): Boolean!
+
+  """Purchase all products using its ids to create a new order"""
+  buyOrderProducts(productsIds: [Int!]!): Order!
+}
+
+"""Information to register a new user inside of the application"""
+input SignUpInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
+}
+
+"""Information to create a new product"""
+input CreateProductInput {
+  name: String!
+  description: String!
+  price: Float!
+  stock: Int!
+  categoryId: Int!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+"""Information to update an existing product"""
+input UpdateProductInput {
+  name: String
+  description: String
+  price: Float
+  stock: Int
+  categoryId: Int
+}
+
+"""Information to create a new category"""
+input CreateCategoryInput {
+  name: String!
+  description: String!
+}

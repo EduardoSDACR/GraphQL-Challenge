@@ -1,9 +1,9 @@
 ## Description
 
-This is a API Rest project with services related to manage a product store. 
+This is a GraphQL API project with services related to manage a product store. 
 
-## API Documentation:
-You can check the documentation of the project checking the route "/api".
+## Apollo Sandbox:
+You can check the documentation or the project schema checking the route "/graphql".
 
 ## Installation
 
@@ -59,3 +59,9 @@ $ npm run test
 ```bash
 $ npm run test:cov
 ```
+
+## Required header variables
+There's two headers which need to be set to make some GraphQL operations work. The first is needed when a operation can upload an image and the other is for authenticate and validate user access:
+> Apollo-Require-Preflight = True
+ 
+> Authorization = Bearer <jwt_token>

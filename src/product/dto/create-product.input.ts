@@ -1,31 +1,36 @@
 import { IsNotEmpty, IsNumber, IsString, Max } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Field, Float, InputType } from '@nestjs/graphql';
 
-export class CreateProductDto {
+@InputType({
+  description: 'Information to create a new product',
+})
+export class CreateProductInput {
+  @Field()
   @IsString()
   @IsNotEmpty()
   name: string;
 
+  @Field()
   @IsString()
   @IsNotEmpty()
   description: string;
 
+  @Field(() => Float)
   @IsNumber(
     { maxDecimalPlaces: 2 },
     { message: 'only two decimal places are accepted' },
   )
   @Max(1000)
   @IsNotEmpty()
-  @Type(() => Number)
   price: number;
 
+  @Field()
   @IsNumber()
   @IsNotEmpty()
-  @Type(() => Number)
   stock: number;
 
+  @Field()
   @IsNumber()
   @IsNotEmpty()
-  @Type(() => Number)
   categoryId: number;
 }

@@ -1,6 +1,12 @@
 import { faker } from '@faker-js/faker';
-import { Token, User } from '@prisma/client';
-import { TokenDto } from '../dto';
+import { Prisma, Token, User } from '@prisma/client';
+import { Token as TokenModel } from '../model';
+
+export const RequestWithAuthHeaderMock = {
+  headers: {
+    authorization: faker.string.nanoid(),
+  },
+};
 
 export const userMock: User = {
   id: faker.number.int(),
@@ -22,7 +28,7 @@ export const tokenMock: Token = {
   jti: faker.string.uuid(),
 };
 
-export const credentialsMock: TokenDto = {
+export const credentialsMock: TokenModel = {
   accessToken: faker.string.nanoid(),
   exp: faker.string.numeric(),
 };
@@ -31,4 +37,12 @@ export const authServiceMock = {
   signIn: jest.fn().mockResolvedValue(credentialsMock),
   signUp: jest.fn().mockResolvedValue(credentialsMock),
   signOut: jest.fn().mockResolvedValue(undefined),
+  generateChangePasswordKey: jest.fn().mockResolvedValue(undefined),
+  changePassword: jest.fn().mockResolvedValue(undefined),
 };
+
+export const prismaForeignKeyExceptionMock =
+  new Prisma.PrismaClientKnownRequestError('', {
+    code: 'P2003',
+    clientVersion: '4.15.0',
+  });

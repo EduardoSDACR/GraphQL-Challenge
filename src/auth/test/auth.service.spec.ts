@@ -11,9 +11,13 @@ import { PrismaClient } from '@prisma/client';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SignInDto } from '../dto';
+import { SignInInput } from '../dto';
 import { AuthService } from '../auth.service';
-import { tokenMock, userMock } from './auth.mock';
+import {
+  prismaForeignKeyExceptionMock,
+  tokenMock,
+  userMock,
+} from './auth.mock';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -35,7 +39,7 @@ describe('AuthService', () => {
   describe('signIn', () => {
     it('should throw an error when user email is not found', async () => {
       prismaService.user.findUnique.mockResolvedValueOnce(null);
-      const input: SignInDto = {
+      const input: SignInInput = {
         email: faker.internet.email(),
         password: faker.lorem.word(),
       };
@@ -50,7 +54,7 @@ describe('AuthService', () => {
       jest
         .spyOn(bcrypt, 'compare')
         .mockImplementation(() => Promise.resolve(false));
-      const input: SignInDto = {
+      const input: SignInInput = {
         email: faker.internet.email(),
         password: faker.lorem.word(),
       };
@@ -71,7 +75,7 @@ describe('AuthService', () => {
       jest
         .spyOn(bcrypt, 'compare')
         .mockImplementation(() => Promise.resolve(true));
-      const input: SignInDto = {
+      const input: SignInInput = {
         email: faker.internet.email(),
         password: faker.lorem.word(),
       };
@@ -126,7 +130,7 @@ describe('AuthService', () => {
 
   describe('signOut', () => {
     it('should throw an error when user session is not found', async () => {
-      prismaService.token.delete.mockRejectedValue(
+      prismaService.token.delete.mockRejectedValueOnce(
         new Prisma.PrismaClientKnownRequestError('', {
           code: 'P2025',
           clientVersion: '4.15.0',
@@ -138,11 +142,108 @@ describe('AuthService', () => {
       ).rejects.toThrowError(new NotFoundException('Session not found'));
     });
 
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.token.delete.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        authService.signOut(faker.string.nanoid()),
+      ).rejects.toThrowError(prismaError);
+    });
+
     it('should delete user session', async () => {
       prismaService.token.delete.mockResolvedValueOnce(tokenMock);
       const result = await authService.signOut(faker.string.nanoid());
 
       expect(result).toBeUndefined();
+    });
+
+    it('should throw an error', async () => {
+      prismaService.token.delete.mockRejectedValueOnce(new Error());
+
+      await expect(
+        authService.signOut(faker.string.nanoid()),
+      ).rejects.toThrowError(new Error());
+    });
+  });
+
+  describe('generateChangePasswordKey', () => {
+    it('should generate a token and return null', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(userMock);
+      prismaService.token.create.mockResolvedValueOnce(tokenMock);
+
+      const result = await authService.generateChangePasswordKey(
+        faker.internet.email(),
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should throw an error if email is not registered', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(null);
+
+      await expect(
+        authService.generateChangePasswordKey(faker.internet.email()),
+      ).rejects.toThrowError(
+        new NotFoundException('This email is not registered in the app'),
+      );
+    });
+  });
+
+  describe('changePassword', () => {
+    it('should change password and return null', async () => {
+      prismaService.token.findUnique.mockResolvedValueOnce(tokenMock);
+      prismaService.user.update.mockResolvedValueOnce(userMock);
+
+      const result = await authService.changePassword(
+        faker.string.uuid(),
+        faker.lorem.word(),
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should throw an error when key is invalid', async () => {
+      prismaService.token.findUnique.mockResolvedValueOnce(null);
+
+      await expect(
+        authService.changePassword(faker.string.uuid(), faker.lorem.word()),
+      ).rejects.toThrowError(new UnprocessableEntityException('Invalid key'));
+    });
+  });
+
+  describe('createToken', () => {
+    it('should throw an error when user is not found', async () => {
+      prismaService.token.create.mockRejectedValueOnce(
+        prismaForeignKeyExceptionMock,
+      );
+
+      await expect(
+        authService.createToken(faker.number.int()),
+      ).rejects.toThrowError(new NotFoundException('User not found'));
+    });
+
+    it('should throw an error when prisma operation had a problem', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('', {
+        code: '---',
+        clientVersion: '4.15.0',
+      });
+      prismaService.token.create.mockRejectedValueOnce(prismaError);
+
+      await expect(
+        authService.createToken(faker.number.int()),
+      ).rejects.toThrowError(prismaError);
+    });
+
+    it('should throw an error', async () => {
+      prismaService.token.create.mockRejectedValueOnce(new Error());
+
+      await expect(
+        authService.createToken(faker.number.int()),
+      ).rejects.toThrowError(new Error());
     });
   });
 });
