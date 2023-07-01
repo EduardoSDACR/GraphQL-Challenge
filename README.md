@@ -68,6 +68,6 @@ $ npm run test:cov
 
 ## Required header variables
 There's two headers which need to be set to make some GraphQL operations work. The first is needed when an operation can upload an image and the other is for authenticate and validate user access:
-> Apollo-Require-Preflight = True
+> Apollo-Require-Preflight = true
  
 > Authorization = Bearer <jwt_token>
