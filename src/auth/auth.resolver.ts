@@ -34,4 +34,23 @@ export class AuthResolver {
 
     return true;
   }
+
+  @Query(/* istanbul ignore next */ () => String, {
+    description: 'Use an email to receive a key to change your password',
+  })
+  async forgotPassword(@Args('email') email: string) {
+    await this.authService.generateChangePasswordKey(email);
+    return 'Check your email to change password';
+  }
+
+  @Mutation(/* istanbul ignore next */ () => Boolean, {
+    description: 'Use the key sent to email of user to change his password',
+  })
+  async changePassword(
+    @Args('key') key: string,
+    @Args('newPassword') newPassword: string,
+  ) {
+    await this.authService.changePassword(key, newPassword);
+    return true;
+  }
 }

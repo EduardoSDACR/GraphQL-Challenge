@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Prisma, Token } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { compare, hash } from 'bcrypt';
+import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaErrorEnum } from '../utils/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignInInput, SignUpInput } from './dto';
@@ -19,6 +20,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private config: ConfigService,
+    private mailerService: MailerService,
   ) {}
 
   async signIn(input: SignInInput): Promise<TokenModel> {
@@ -88,6 +90,67 @@ export class AuthService {
 
       throw error;
     }
+  }
+
+  async generateChangePasswordKey(email: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('This email is not registered in the app');
+    }
+
+    const token = await this.prisma.token.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
+    await this.mailerService.sendMail({
+      to: email,
+      from: this.config.get<string>('EMAIL_SENDER'),
+      subject: 'Change password',
+      text: 'This is your key to change your password',
+      html: `<strong>Use this key to change your password: ${token.jti}</strong>`,
+    });
+  }
+
+  async changePassword(key: string, newPassword: string): Promise<void> {
+    const token = await this.prisma.token.findUnique({
+      where: {
+        jti: key,
+      },
+    });
+
+    if (!token || !token.userId) {
+      throw new UnprocessableEntityException('Invalid key');
+    }
+
+    const user = await this.prisma.user.update({
+      where: {
+        id: token.userId,
+      },
+      data: {
+        hash: await hash(newPassword, 10),
+      },
+    });
+
+    await this.prisma.token.delete({
+      where: {
+        id: token.id,
+      },
+    });
+
+    await this.mailerService.sendMail({
+      to: user.email,
+      from: this.config.get<string>('EMAIL_SENDER'),
+      subject: 'Password was change',
+      text: `Your password was successfully change at ${Date.now()}}`,
+      html: `<strong>Your password was successfully change at ${user.updatedAt}</strong>`,
+    });
   }
 
   async createToken(id: number): Promise<Token> {

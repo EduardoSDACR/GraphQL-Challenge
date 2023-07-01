@@ -43,6 +43,9 @@ type Order {
 type Query {
   """With provided user access information obtain credentials"""
   signIn(input: SignInInput!): Token!
+
+  """Use an email to receive a key to change your password"""
+  forgotPassword(email: String!): String!
   products: [Product!]!
   productsWithPagination(skip: Int!, take: Int!): [Product!]!
   product(productId: Int!): Product!
@@ -78,6 +81,9 @@ type Mutation {
 
   """End user session and delete credentials validation"""
   signOut: Boolean!
+
+  """Use the key sent to email of user to change his password"""
+  changePassword(key: String!, newPassword: String!): Boolean!
 
   """
   Add a new product. To upload an image you need to set a header named "Apollo-Require-Preflight" to true.

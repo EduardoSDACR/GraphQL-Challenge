@@ -1,10 +1,12 @@
 import { join } from 'path';
+import * as process from 'process';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { configValidationSchema } from './config.schema';
@@ -29,6 +31,15 @@ import { OrderModule } from './order/order.module';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       buildSchemaOptions: {
         numberScalarMode: 'integer',
+      },
+    }),
+    MailerModule.forRoot({
+      transport: {
+        service: 'hotmail',
+        auth: {
+          user: process.env.EMAIL_SENDER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
       },
     }),
     PrismaModule,
