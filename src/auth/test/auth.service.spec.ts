@@ -170,6 +170,51 @@ describe('AuthService', () => {
     });
   });
 
+  describe('generateChangePasswordKey', () => {
+    it('should generate a token and return null', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(userMock);
+      prismaService.token.create.mockResolvedValueOnce(tokenMock);
+
+      const result = await authService.generateChangePasswordKey(
+        faker.internet.email(),
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should throw an error if email is not registered', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce(null);
+
+      await expect(
+        authService.generateChangePasswordKey(faker.internet.email()),
+      ).rejects.toThrowError(
+        new NotFoundException('This email is not registered in the app'),
+      );
+    });
+  });
+
+  describe('changePassword', () => {
+    it('should change password and return null', async () => {
+      prismaService.token.findUnique.mockResolvedValueOnce(tokenMock);
+      prismaService.user.update.mockResolvedValueOnce(userMock);
+
+      const result = await authService.changePassword(
+        faker.string.uuid(),
+        faker.lorem.word(),
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should throw an error when key is invalid', async () => {
+      prismaService.token.findUnique.mockResolvedValueOnce(null);
+
+      await expect(
+        authService.changePassword(faker.string.uuid(), faker.lorem.word()),
+      ).rejects.toThrowError(new UnprocessableEntityException('Invalid key'));
+    });
+  });
+
   describe('createToken', () => {
     it('should throw an error when user is not found', async () => {
       prismaService.token.create.mockRejectedValueOnce(

@@ -37,6 +37,8 @@ export const authServiceMock = {
   signIn: jest.fn().mockResolvedValue(credentialsMock),
   signUp: jest.fn().mockResolvedValue(credentialsMock),
   signOut: jest.fn().mockResolvedValue(undefined),
+  generateChangePasswordKey: jest.fn().mockResolvedValue(undefined),
+  changePassword: jest.fn().mockResolvedValue(undefined),
 };
 
 export const prismaForeignKeyExceptionMock =

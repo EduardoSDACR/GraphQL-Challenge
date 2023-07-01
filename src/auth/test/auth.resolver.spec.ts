@@ -50,4 +50,19 @@ describe('AuthResolver', () => {
 
     expect(result).toBe(true);
   });
+
+  it('should return undefined', async () => {
+    const result = await resolver.forgotPassword(faker.internet.email());
+
+    expect(result).toEqual('Check your email to change password');
+  });
+
+  it('should return undefined', async () => {
+    const result = await resolver.changePassword(
+      faker.lorem.word(),
+      faker.internet.email(),
+    );
+
+    expect(result).toEqual(true);
+  });
 });
